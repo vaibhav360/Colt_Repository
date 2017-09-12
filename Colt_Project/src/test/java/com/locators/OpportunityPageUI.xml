@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Opportunity>
+	
+	<OpportunitySearchBtn><![CDATA[//span[contains(@id,'searchButton-inner')]]]></OpportunitySearchBtn>
+	<OpportunityInputBox><![CDATA[//input[contains(@id,'searchField')]]]></OpportunityInputBox>
+	<table><![CDATA[//table[contains(@id,'listdefintion')]/tbody/tr]]></table>
+</Opportunity>

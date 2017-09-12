@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Locator>
+	<Username><![CDATA[//input[@name='username']]]></Username>
+	<Password><![CDATA[//input[@name='psword']]]></Password>
+	<Login><![CDATA[//*[@id='log_in']]]></Login>
+	<Logout><![CDATA[//a[contains(@href,'/logout.jsp')]]]></Logout>
+
+	<OrderManager><![CDATA[//a[contains(@href,'/commerce/buyside/commerce_manager.jsp')]]]></OrderManager>
+	<NewTransaction><![CDATA[//a[@id='new_transaction']]]></NewTransaction>
+
+	<QuoteName><![CDATA[//*[@id='quoteName_t']]]></QuoteName>
+	<Description><![CDATA[//*[@id='title_t']]]></Description>
+	<AddProduct><![CDATA[//a[@id='add_product']]]></AddProduct>
+	<EtherNet><![CDATA[//a[text()='Ethernet']]]></EtherNet>
+	<EnternetLine><![CDATA[//a[text()='Ethernet Line']]]></EnternetLine>
+
+	<BandWidth><![CDATA[//select[@id='serviceBandwidth']]]></BandWidth>
+	<Resiliency><![CDATA[//select[@id='resiliency']]]></Resiliency>
+	<SiteAAddress><![CDATA[//input[@id='siteAddressAEnd']]]></SiteAAddress>
+	<Address><![CDATA[//div[@class='pac-container pac-logo']/div[1]/span[2]/span]]></Address>
+	<SiteBAddress><![CDATA[//input[@id='siteAddressBEnd']]]></SiteBAddress>
+
+	<Update><![CDATA[//*[@id='update']]]></Update>
+	<CheckConnectivity><![CDATA[//a[@name='next']]]></CheckConnectivity>
+
+	<Addon><![CDATA[//*[@id='tab-addOn']/a]]></Addon>
+	<Options1><![CDATA[//*[@id='outsideBusinessHoursInstallationAEnd_true']]]></Options1>
+	<Options2><![CDATA[//*[@id='dualEntryAEnd_true']]]></Options2>
+	<Options3><![CDATA[//*[@id='outsideBusinessHoursInstallationBEnd_true']]]></Options3>
+	<Options4><![CDATA[//*[@id='dualEntryBEnd_true']]]></Options4>
+
+	<SelectedOption1><![CDATA[//td[text()='Outside Business Hours Installation A End']]]></SelectedOption1>
+	<SelectedOption2><![CDATA[//td[text()='Dual Entry A End']]]></SelectedOption2>
+	<SelectedOption3><![CDATA[//td[text()='Outside Business Hours Installation B End']]]></SelectedOption3>
+	<SelectedOption4><![CDATA[//td[text()='Dual Entry B End']]]></SelectedOption4>
+
+	<table><![CDATA[//div[@id='chargesAddonLevel']/table/tbody/tr]]></table>
+
+	<AddToTransaction><![CDATA[//*[@id='add_to_transaction']]]></AddToTransaction>
+	<SaveBtn><![CDATA[save]]></SaveBtn>
+	<table1><![CDATA[//table[@id='line-item-grid']/tbody/tr]]></table1>
+	<connectivityMsgA><![CDATA[//*[@id='blankconnectivitya']]]></connectivityMsgA>
+	<connectivityMsgB><![CDATA[//*[@id='blankconnectivityb']]]></connectivityMsgB>
+	<siteMsgB><![CDATA[//*[@id='connectivityOptionsBEnd']//b]]></siteMsgB>
+	<siteMsgA><![CDATA[//*[@id='connectivityOptionsAEnd']//b]]></siteMsgA>
+	<siteTypeA><![CDATA[siteTypeAEnd]]></siteTypeA>
+	<siteTypeB><![CDATA[siteTypeBEnd]]></siteTypeB>
+	<smeSegment><![CDATA[//*[@name='pricingSegment_t']]]></smeSegment>	
+
+	<!--============== C4CApplication Locators ================== -->
+	<C4CApplication>
+
+		<username><![CDATA[//*[@id='__screen0-user-inner']]]></username>
+		<password><![CDATA[//*[@id='__screen0-pass-inner']]]></password>
+		<logInBtn><![CDATA[//*[@class='sapMBtnContent']]]></logInBtn>
+		>
+		<MultilogonPopUp><![CDATA[__mbox0-header]]></MultilogonPopUp>
+		<PopUpYes><![CDATA[//*[text()='Yes']]]></PopUpYes>
+		>
+		<PopUpNo><![CDATA[//*[text()='No']]]></PopUpNo>
+		>
+
+	</C4CApplication>
+	>
+
+</Locator>

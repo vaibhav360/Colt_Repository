@@ -20,3 +20,8 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+Colt_Project/.settings
+Colt_Project/screenshots
+Colt_Project/test-output
+Colt_Project/target
