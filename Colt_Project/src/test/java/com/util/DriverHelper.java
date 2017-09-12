@@ -10,6 +10,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
@@ -93,6 +94,14 @@ public abstract class DriverHelper extends DriverTestCase {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	/*
+	 * Click action performed and then wait
+	 */
+	public void waitAndClick(WebElement element) {
+		waitForElement(element);
+		element.click();
 	}
 
 	// Handle click action
@@ -214,12 +223,6 @@ public abstract class DriverHelper extends DriverTestCase {
 		builder.sendKeys(Keys.ARROW_UP).perform();
 	}
 
-	public void waitForElement(WebElement element) {
-		// logger.info("waitForElement");
-		WebDriverWait wait = new WebDriverWait(getWebDriver(), DEFAULT_WAIT_4_ELEMENT);
-		wait.until(ExpectedConditions.elementToBeClickable(element));
-	}
-
 	public void waitForElement(String locator) {
 		// logger.info("waitForElement");
 		WebDriverWait wait = new WebDriverWait(getWebDriver(), DEFAULT_WAIT_4_ELEMENT);
@@ -287,5 +290,94 @@ public abstract class DriverHelper extends DriverTestCase {
 			reportLog(e.getMessage());
 			throw new NoSuchElementException(e.getMessage());
 		}
+	}
+	
+	public void waitForElement(WebElement element) {
+		try {
+			WebDriverWait wait = new WebDriverWait(driver, DEFAULT_WAIT_4_ELEMENT);
+			wait.until(ExpectedConditions.elementToBeClickable(element));
+		} catch (Exception e) {
+			reportLog(element.toString() + " is not present on page or not clickable");
+		}
+
+	}
+
+	public void waitForElementVisible(WebElement element) {
+		try {
+			WebDriverWait wait = new WebDriverWait(driver, timeout);
+			wait.until(ExpectedConditions.visibilityOf(element));
+		} catch (Exception e) {
+			reportLog(element.toString() + " is not present on page");
+		}
+	}
+	
+	public void sleepExecution(int sec) {
+		sec = sec * 1000;
+		try {
+			Thread.sleep(sec);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean _waitForJStoLoad() {
+		// wait for jQuery to load
+		sleepExecution(3);
+		ExpectedCondition<Boolean> jQueryLoad = new ExpectedCondition<Boolean>() {
+			public Boolean apply(WebDriver driver) {
+				try {
+					return ((Long) ((JavascriptExecutor) driver).executeScript("return jQuery.active") == 0);
+				} catch (Exception e) {
+					return true;
+				}
+			}
+		};
+
+		// wait for JavaScript to load
+		ExpectedCondition<Boolean> jsLoad = new ExpectedCondition<Boolean>() {
+			public Boolean apply(WebDriver driver) {
+				Object rsltJs = ((JavascriptExecutor) driver).executeScript("return document.readyState");
+				if (rsltJs == null) {
+					rsltJs = "";
+				}
+				return rsltJs.toString().equals("complete") || rsltJs.toString().equals("loaded");
+			}
+		};
+
+		WebDriverWait wait = new WebDriverWait(driver, DEFAULT_WAIT_4_PAGE);
+		boolean waitDone = wait.until(jQueryLoad) && wait.until(jsLoad);
+		return waitDone;
+	}
+
+	public Boolean isElementPresent(WebElement element) {
+		try {
+			// waitForElementVisible(element);
+			element.isDisplayed();
+			return true;
+		} catch (Exception ex) {
+		}
+		return false;
+	}
+	
+	public void verifyElementPresent(WebElement element) {
+		_waitForJStoLoad();
+		Assert.assertTrue(isElementPresent(element), element.toString() + " is not present");
+	}
+
+	public void verifyElementNotPresent(WebElement element) {
+		_waitForJStoLoad();
+		Assert.assertFalse(isElementPresent(element), element.toString() + " is present");
+	}
+
+	public void verifyElementText(WebElement element, String text) {
+		_waitForJStoLoad();
+		Assert.assertTrue(isElementPresent(element), element.toString() + " is not present");
+		Assert.assertEquals(element.getText(), text);
+	}
+
+	public void verifyElementValue(WebElement element, String text) {
+		_waitForJStoLoad();
+		Assert.assertTrue(isElementPresent(element), element.toString() + " is not present");
+		Assert.assertEquals(element.getAttribute("value"), text);
 	}
 }

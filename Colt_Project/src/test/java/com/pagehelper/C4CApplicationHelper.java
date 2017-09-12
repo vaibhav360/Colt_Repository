@@ -29,7 +29,7 @@ public class C4CApplicationHelper extends DriverHelper {
 		locator = locatorReader.getLocator("logInBtn");
 		clickOn(locator);
 
-		waitForAjaxRequestsToComplete();
+		_waitForJStoLoad();
 	}
 
 	public boolean verifyMultipleLoginPopUp(String xpath) {
@@ -41,7 +41,7 @@ public class C4CApplicationHelper extends DriverHelper {
 	public void clickOnMultipleLoginPopUp(String locator) throws InterruptedException {
 		String loc = locatorReader.getLocator(locator);
 		clickOn(loc);
-		waitForAjaxRequestsToComplete();
+		_waitForJStoLoad();
 	}
 
 	public void clickOnNewItem(String input) throws InterruptedException {
@@ -68,7 +68,7 @@ public class C4CApplicationHelper extends DriverHelper {
 			break;
 		}
 		clickOn(loc);
-		waitForAjaxRequestsToComplete();
+		_waitForJStoLoad();
 
 	}
 
@@ -124,13 +124,13 @@ public class C4CApplicationHelper extends DriverHelper {
 		Thread.sleep(2000);
 		loc = locatorReader.getLocator("OpportunityMenu");
 		clickOn(loc);
-		waitForAjaxRequestsToComplete();
+		_waitForJStoLoad();
 	}
 
 	public void goToHomePage() throws InterruptedException {
 		String loc = locatorReader.getLocator("HomeMenu");
 		clickOn(loc);
-		waitForAjaxRequestsToComplete();
+		_waitForJStoLoad();
 	}
 
 	public void verifySalesMenuSubLinks(String menu, String[] sublinks) {

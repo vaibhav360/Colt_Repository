@@ -96,7 +96,7 @@ public class Colt_DemoHelper extends DriverHelper {
 		Thread.sleep(3000);
 		// click("Login");
 		pressEnterKey();
-		waitForAjaxRequestsToComplete();
+		_waitForJStoLoad();
 	}
 
 	// Click on button
@@ -104,7 +104,7 @@ public class Colt_DemoHelper extends DriverHelper {
 		try {
 			String locator = locatorReader.getLocator(button);
 			clickOn(locator);
-			waitForAjaxRequestsToComplete();
+			_waitForJStoLoad();
 		} catch (Exception e) {
 			reportLog(e.getMessage());
 		}
@@ -185,7 +185,7 @@ public class Colt_DemoHelper extends DriverHelper {
 	public void selectDropdownByValue(String dropdown, String value) throws InterruptedException {
 		String locator = locatorReader.getLocator(dropdown);
 		selectByValue(locator, value);
-		waitForAjaxRequestsToComplete();
+		_waitForJStoLoad();
 	}
 
 	public void selectAddress(String field, Keys key) {
@@ -362,7 +362,7 @@ public class Colt_DemoHelper extends DriverHelper {
 			SafeFindElement(locator);
 		if (!(data == null || data.equals("No"))) {
 			clickOn(locator);
-			waitForAjaxRequestsToComplete();
+			_waitForJStoLoad();
 		}
 	}
 
@@ -373,7 +373,7 @@ public class Colt_DemoHelper extends DriverHelper {
 
 		javascriptButtonClick(addOnTab);
 		reportLog("Click on to the Add On Tab");
-		waitForAjaxRequestsToComplete();
+		_waitForJStoLoad();
 
 		clickParticularAddOn(outsideBHI_Site_B, model.getOutsideBHI_Site_B());
 		reportLog("Select outsideBHI_Site_B add on");

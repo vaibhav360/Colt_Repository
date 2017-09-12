@@ -1,7 +1,5 @@
 package com.util;
 
-import org.openqa.selenium.By;
-
 public class DataModelCPQ {
 
 	String outsideBHI_Site_A = null;
@@ -249,5 +247,20 @@ public class DataModelCPQ {
 	public void setSync(String sync) {
 		this.sync = sync;
 	}
+
+	@Override
+	public String toString() {
+		return "DataModelCPQ [outsideBHI_Site_A=" + outsideBHI_Site_A + ", outsideBHI_Site_B=" + outsideBHI_Site_B
+				+ ", dual_Entry_Site_A=" + dual_Entry_Site_A + ", dual_Entry_Site_B=" + dual_Entry_Site_B
+				+ ", longLining_A=" + longLining_A + ", longLining_B=" + longLining_B + ", ic_Site_A=" + ic_Site_A
+				+ ", ic_Site_B=" + ic_Site_B + ", lag_Site_A=" + lag_Site_A + ", lag_Site_B=" + lag_Site_B
+				+ ", diversity=" + diversity + ", cos=" + cos + ", pr=" + pr + ", pam=" + pam + ", fastTrack="
+				+ fastTrack + ", sync=" + sync + ", customer=" + customer + ", country=" + country + ", contract_Term="
+				+ contract_Term + ", site_A_Add=" + site_A_Add + ", site_B_Add=" + site_B_Add + ", coverage=" + coverage
+				+ ", building_Type=" + building_Type + ", resiliency=" + resiliency + ", segment=" + segment
+				+ ", bandWidth=" + bandWidth + ", quoteName=" + quoteName + "]";
+	}
+	
+	
 
 }
