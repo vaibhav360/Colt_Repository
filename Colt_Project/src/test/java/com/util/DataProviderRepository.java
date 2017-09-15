@@ -17,7 +17,6 @@ public class DataProviderRepository {
 		// Rows - Number of times your test has to be repeated.
 		// Columns - Number of parameters in test data.
 		ExcelReader ex = new ExcelReader("TestData_WithContractTerm.xlsx", "sheet2");
-		// DataModelCPQ cpqModel = new DataModelCPQ();
 		Object[][] data = new Object[ex.getRowCount()][ex.getColCount()];
 		for (int i = 0; i < ex.getRowCount(); i++) {
 			for (int j = 0; j < ex.getColCount(); j++) {
@@ -68,7 +67,7 @@ public class DataProviderRepository {
 				}
 			}
 
-		};//modelData.forEach(item -> System.out.println(item.toString()));
+		};
 		return modelData.iterator();
 	}
 

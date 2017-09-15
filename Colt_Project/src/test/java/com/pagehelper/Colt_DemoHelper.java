@@ -11,10 +11,10 @@ import org.testng.asserts.SoftAssert;
 
 import com.locators.LocatorReader;
 import com.util.DataModelCPQ;
-import com.util.DriverHelper;
+import com.util.BasePage;
 import com.util.GlobalConstants;
 
-public class Colt_DemoHelper extends DriverHelper {
+public class Colt_DemoHelper extends BasePage {
 
 	public By outsideBHI_Site_A = By.id("outsideBusinessHoursInstallationAEnd_true");
 	public By outsideBHI_Site_B = By.id("outsideBusinessHoursInstallationBEnd_true");
@@ -41,6 +41,9 @@ public class Colt_DemoHelper extends DriverHelper {
 	public String manuallyEnterB = "//span[text()='Manually enter B End Address']";
 	public String buildingInputBox_A = "premiseNumberAEnd";
 	public String buildingInputBox_B = "premiseNumberBEnd";
+	public String blankPriceMsg = "//*[text()='BlankPrices: ']";
+	public String addProductBtn = "//a[@id='add_product']";
+	
 
 	private static LocatorReader locatorReader;
 	// protected PropertyReader propertyReader = new PropertyReader();
@@ -104,7 +107,7 @@ public class Colt_DemoHelper extends DriverHelper {
 		try {
 			String locator = locatorReader.getLocator(button);
 			clickOn(locator);
-			_waitForJStoLoad();
+			// _waitForJStoLoad();
 		} catch (Exception e) {
 			reportLog(e.getMessage());
 		}
@@ -129,7 +132,7 @@ public class Colt_DemoHelper extends DriverHelper {
 	}
 
 	// To verify field displayed or not
-	public boolean verifyFieldDisplayed(String xpath) {
+	public boolean isElementDisplayed(String xpath) {
 		String locator = locatorReader.getLocator(xpath);
 		waitForWorkAroundTime(2000);
 		return isElementPresent(locator);
@@ -249,7 +252,7 @@ public class Colt_DemoHelper extends DriverHelper {
 
 		String locator = null;
 		if (priceColumn.equals("NRC (net)")) {
-			locator = "//*[text()='" + product + "']/../../../following-sibling::td[4]";
+			locator = "//*[text()='" + product + "']/../../../following-sibling::td[5]";
 		}
 
 		if (priceColumn.equals("MRC (net)")) {
@@ -291,10 +294,20 @@ public class Colt_DemoHelper extends DriverHelper {
 	}
 
 	public void verifyConnectivityMessage(String msgA, String msgB) {
-		if (msgA.equals("Oops!!! Connectivity not found for selected site,")
-				|| msgB.equals("Oops!!! Connectivity not found for selected site,")) {
-			softAssert.fail("Site A or Site B address have connection issue");
+		if (msgA.contains("Oops!!! Connectivity not found for selected site,")
+				|| msgB.contains("Oops!!! Connectivity not found for selected site,")) {
+			Assert.fail("Site A or Site B address have connection issue");
 		}
+	}
+
+	public void verifyBlankPriceMessage() {
+		boolean flag = isElementPresent(blankPriceMsg);
+		if (flag) {
+			String msg = getText(blankPriceMsg);
+			System.out.println(msg);
+			Assert.fail("Prices are blank");
+		}
+
 	}
 
 	/**
@@ -347,19 +360,18 @@ public class Colt_DemoHelper extends DriverHelper {
 	public void verify_NRC_MRC_Prices(String nrc, String mrc) {
 		String nrc_Net_Price = getProductPricingValues("Connectivity Charge", "NRC (net)");
 		String mrc_Net_Price = getProductPricingValues("Connectivity Charge", "MRC (net)");
-		softAssert.assertTrue(nrc_Net_Price.equals(nrc_Net_Price),
-				"Prices are not equal. Actual: " + nrc_Net_Price + " Expected: " + nrc_Net_Price);
-		reportLog("Verifying the NRC(net) Price of Site A. Actual: " + nrc_Net_Price + " Expected: " + nrc_Net_Price);
-		softAssert.assertTrue(mrc_Net_Price.equals(mrc_Net_Price),
-				"Prices are not equal. Actual: " + mrc_Net_Price + " Expected: " + mrc_Net_Price);
-		reportLog("Verifying the MRC(net) Price of Site B. Actual: " + mrc_Net_Price + " Expected: " + mrc_Net_Price);
-		softAssert.assertTrue(mrc_Net_Price.equals(mrc_Net_Price),
-				"Prices are not equal. Actual: " + mrc_Net_Price + " Expected: " + mrc_Net_Price);
+		softAssert.assertTrue(nrc_Net_Price.equals(nrc),
+				"Prices are not equal. Actual: " + nrc_Net_Price + " Expected: " + nrc);
+		reportLog("Verifying the NRC(net) Price of Site A. Actual: " + nrc_Net_Price + " Expected: " + nrc);
+		softAssert.assertTrue(mrc_Net_Price.equals(mrc),
+				"Prices are not equal. Actual: " + mrc_Net_Price + " Expected: " + mrc);
+		reportLog("Verifying the MRC(net) Price of Site B. Actual: " + mrc_Net_Price + " Expected: " + mrc);
+		
 	}
 
 	public void clickParticularAddOn(By locator, String data) throws InterruptedException {
-		
-			SafeFindElement(locator);
+
+		SafeFindElement(locator);
 		if (!(data == null || data.equals("No"))) {
 			clickOn(locator);
 			_waitForJStoLoad();
@@ -430,9 +442,8 @@ public class Colt_DemoHelper extends DriverHelper {
 		reportLog("Select fastTrack add on");
 
 	}
-	
-	public void softAsserAll()
-	{
+
+	public void softAsserAll() {
 		softAssert.assertAll();
 	}
 

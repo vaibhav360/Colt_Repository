@@ -4,9 +4,9 @@ import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 
 import com.locators.LocatorReader;
-import com.util.DriverHelper;
+import com.util.BasePage;
 
-public class OpportunitiesPage extends DriverHelper {
+public class OpportunitiesPage extends BasePage {
 
 	private static LocatorReader locatorReader;
 

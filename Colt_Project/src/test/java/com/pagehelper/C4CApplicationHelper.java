@@ -3,9 +3,9 @@ package com.pagehelper;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import com.locators.LocatorReader;
-import com.util.DriverHelper;
+import com.util.BasePage;
 
-public class C4CApplicationHelper extends DriverHelper {
+public class C4CApplicationHelper extends BasePage {
 
 	private static LocatorReader locatorReader;
 

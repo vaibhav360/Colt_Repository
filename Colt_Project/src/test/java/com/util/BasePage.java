@@ -19,15 +19,14 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
-public abstract class DriverHelper extends DriverTestCase {
+public abstract class BasePage extends DriverTestCase {
 	// Define objects
 	protected WebDriver driver;
 
 	protected SoftAssert softAssert = new SoftAssert();
 
-	// Declare objects
-	public DriverHelper(WebDriver webdriver) {
-		driver = webdriver;
+	public BasePage(WebDriver driver) {
+		this.driver = driver;
 	}
 
 	// Return web driver object
@@ -95,7 +94,7 @@ public abstract class DriverHelper extends DriverTestCase {
 			}
 		}
 	}
-	
+
 	/*
 	 * Click action performed and then wait
 	 */
@@ -106,7 +105,7 @@ public abstract class DriverHelper extends DriverTestCase {
 
 	// Handle click action
 	public void clickOn(String locator) {
-		this.waitForElementPresent(locator, DEFAULT_WAIT_4_ELEMENT);
+		// this.waitForElementPresent(locator, DEFAULT_WAIT_4_ELEMENT);
 		Assert.assertTrue(isElementPresent(locator), "Element Locator :" + locator + " Not found");
 		WebElement el = getWebDriver().findElement(byLocator(locator));
 		el.click();
@@ -118,18 +117,41 @@ public abstract class DriverHelper extends DriverTestCase {
 		el.click();
 	}
 
+	public void clickOn(WebElement locator) {
+		// this.waitForElementPresent(locator, DEFAULT_WAIT_4_ELEMENT);
+		Assert.assertTrue(isElementPresent(locator), "Element Locator :" + locator + " Not found");
+		locator.click();
+	}
+
+	// Click on button
+	public void click(WebElement locator) {
+		try {
+			clickOn(locator);
+			_waitForJStoLoad();
+		} catch (Exception e) {
+			reportLog(e.getMessage());
+		}
+	}
+
 	// Handle send keys action
 	public void sendKeys(String locator, String str) {
-		this.waitForElementPresent(locator, DEFAULT_WAIT_4_ELEMENT);
+		// this.waitForElementPresent(locator, DEFAULT_WAIT_4_ELEMENT);
 		Assert.assertTrue(isElementPresent(locator), "Element Locator :" + locator + " Not found");
 		WebElement el = getWebDriver().findElement(byLocator(locator));
 		el.clear();
 		el.sendKeys(str);
 	}
 
+	// Handle send keys action
+	public void sendKeys(WebElement locator, String str) {
+		Assert.assertTrue(isElementPresent(locator), "Element Locator :" + locator + " Not found");
+		locator.clear();
+		locator.sendKeys(str);
+	}
+
 	// Store text from a locator
 	public String getText(String locator) {
-		waitForElementPresent(locator, DEFAULT_WAIT_4_ELEMENT);
+		// waitForElementPresent(locator, DEFAULT_WAIT_4_ELEMENT);
 		Assert.assertTrue(isElementPresent(locator), "Element Locator :" + locator + " Not found");
 		String text = getWebDriver().findElement(byLocator(locator)).getText();
 		return text;
@@ -137,14 +159,21 @@ public abstract class DriverHelper extends DriverTestCase {
 
 	// Get attribute value
 	public String getAttribute(String locator, String attribute) {
-		waitForElementPresent(locator, DEFAULT_WAIT_4_ELEMENT);
+		// waitForElementPresent(locator, DEFAULT_WAIT_4_ELEMENT);
 		Assert.assertTrue(isElementPresent(locator), "Element Locator :" + locator + " Not found");
 		String text = getWebDriver().findElement(byLocator(locator)).getAttribute(attribute);
 		return text;
 	}
 
+	// Get attribute value
+	public String getAttribute(WebElement locator, String attribute) {
+		Assert.assertTrue(isElementPresent(locator), "Element Locator :" + locator + " Not found");
+		String text = locator.getAttribute(attribute);
+		return text;
+	}
+
 	public Integer getXpathCount(String locator) {
-		waitForElementPresent(locator, DEFAULT_WAIT_4_ELEMENT);
+		// waitForElementPresent(locator, DEFAULT_WAIT_4_ELEMENT);
 		Assert.assertTrue(isElementPresent(locator), "Element Locator :" + locator + " Not found");
 		int a = driver.findElements(By.xpath(locator)).size();
 		return a;
@@ -234,11 +263,21 @@ public abstract class DriverHelper extends DriverTestCase {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", element);
 	}
+	
+	public void javascriptButtonClick(WebElement locator) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].click();", locator);
+	}
 
 	public void javascriptSendKeys(String locator, String data) {
 		WebElement element = getWebDriver().findElement(byLocator(locator));
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].value='" + data + "'", element);
+	}
+	
+	public void javascriptSendKeys(WebElement locator, String data) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].value='" + data + "'", locator);
 	}
 
 	public void javascriptScrollIntoView(String locator) {
@@ -246,7 +285,13 @@ public abstract class DriverHelper extends DriverTestCase {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		jse.executeScript("arguments[0].scrollIntoView()", element);
 	}
-
+	
+	public void javascriptScrollIntoView(WebElement locator) {
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		jse.executeScript("arguments[0].scrollIntoView()", locator);
+	}
+	
+	
 	public WebElement fluentWait(final By locator) {
 		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(30, TimeUnit.SECONDS)
 				.pollingEvery(5, TimeUnit.SECONDS).ignoring(NoSuchElementException.class);
@@ -261,8 +306,8 @@ public abstract class DriverHelper extends DriverTestCase {
 	};
 
 	public WebElement fluentWait(final String locator) {
-		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(30, TimeUnit.SECONDS)
-				.pollingEvery(5, TimeUnit.SECONDS).ignoring(NoSuchElementException.class);
+		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(DEFAULT_WAIT_4_ELEMENT, TimeUnit.SECONDS)
+				.pollingEvery(2, TimeUnit.SECONDS).ignoring(NoSuchElementException.class);
 
 		WebElement foo = wait.until(new Function<WebDriver, WebElement>() {
 			public WebElement apply(WebDriver driver) {
@@ -291,7 +336,7 @@ public abstract class DriverHelper extends DriverTestCase {
 			throw new NoSuchElementException(e.getMessage());
 		}
 	}
-	
+
 	public void waitForElement(WebElement element) {
 		try {
 			WebDriverWait wait = new WebDriverWait(driver, DEFAULT_WAIT_4_ELEMENT);
@@ -304,13 +349,13 @@ public abstract class DriverHelper extends DriverTestCase {
 
 	public void waitForElementVisible(WebElement element) {
 		try {
-			WebDriverWait wait = new WebDriverWait(driver, timeout);
+			WebDriverWait wait = new WebDriverWait(driver, DEFAULT_WAIT_4_ELEMENT);
 			wait.until(ExpectedConditions.visibilityOf(element));
 		} catch (Exception e) {
 			reportLog(element.toString() + " is not present on page");
 		}
 	}
-	
+
 	public void sleepExecution(int sec) {
 		sec = sec * 1000;
 		try {
@@ -319,7 +364,7 @@ public abstract class DriverHelper extends DriverTestCase {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public boolean _waitForJStoLoad() {
 		// wait for jQuery to load
 		sleepExecution(3);
@@ -351,7 +396,7 @@ public abstract class DriverHelper extends DriverTestCase {
 
 	public Boolean isElementPresent(WebElement element) {
 		try {
-			// waitForElementVisible(element);
+			waitForElementVisible(element);
 			element.isDisplayed();
 			return true;
 		} catch (Exception ex) {
@@ -359,8 +404,17 @@ public abstract class DriverHelper extends DriverTestCase {
 		return false;
 	}
 	
+	public Boolean isElementDisplayed(WebElement element) {
+		try {
+			element.isDisplayed();
+			return true;
+		} catch (Exception ex) {
+		}
+		return false;
+	}
+
 	public void verifyElementPresent(WebElement element) {
-		_waitForJStoLoad();
+		// _waitForJStoLoad();
 		Assert.assertTrue(isElementPresent(element), element.toString() + " is not present");
 	}
 
@@ -379,5 +433,68 @@ public abstract class DriverHelper extends DriverTestCase {
 		_waitForJStoLoad();
 		Assert.assertTrue(isElementPresent(element), element.toString() + " is not present");
 		Assert.assertEquals(element.getAttribute("value"), text);
+	}
+
+	public WebDriver hoverOverElementAndClick(WebElement toBeHovered, WebElement toBeClicked) {
+		Actions builder = new Actions(driver);
+		builder.moveToElement(toBeHovered).build().perform();
+		waitForElementPresent(toBeClicked, DEFAULT_WAIT_4_ELEMENT);
+		toBeClicked.click();
+		_waitForJStoLoad();
+		return driver;
+	}
+
+	public WebElement waitForElementPresent(WebElement webElement, int timeOutInSeconds) {
+		WebElement element;
+		try {
+			WebDriverWait wait = new WebDriverWait(driver, timeOutInSeconds);
+			element = wait.until(ExpectedConditions.visibilityOf(webElement));
+			return element;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public WebDriver mouseClick(WebElement element) {
+		Actions builder = new Actions(driver);
+		builder.click(element).build().perform();
+		return driver;
+	}
+
+	/*
+	 * Select element by visible text
+	 * 
+	 * @Param element
+	 * 
+	 * @Patram targetValue: visible text
+	 */
+	public void selectDropDownByText(WebElement element, String targetValue) {
+		waitForElement(element);
+		new Select(element).selectByVisibleText(targetValue);
+	}
+
+	/*
+	 * Select element by Index
+	 * 
+	 * @Param element
+	 * 
+	 * @Patram index
+	 */
+	public void selectDropDownByIndex(WebElement element, int index) {
+		waitForElement(element);
+		new Select(element).selectByIndex(index);
+	}
+
+	/*
+	 * Select element by value
+	 * 
+	 * @Param element
+	 * 
+	 * @Patram targetValue: value
+	 */
+	public void selectDropDownByValue(WebElement element, String targetValue) {
+		waitForElement(element);
+		new Select(element).selectByValue(targetValue);
 	}
 }

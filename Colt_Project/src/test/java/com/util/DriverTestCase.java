@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.By;
@@ -23,28 +22,29 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.BeforeTest;
-
+import com.codoid.products.fillo.Connection;
 import com.locators.LocatorReader;
 import com.pagehelper.C4CApplicationHelper;
 import com.pagehelper.Colt_DemoHelper;
 import com.pagehelper.OpportunitiesPage;
+import com.pages.Commerce_Management_Page;
+import com.pages.Model_Configuration_Page;
+import com.pages.Product_List_Page;
+import com.pages.Transaction_Page;
 import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
-import com.relevantcodes.extentreports.model.Author;
 
 public abstract class DriverTestCase {
 
@@ -57,6 +57,13 @@ public abstract class DriverTestCase {
 	public static Colt_DemoHelper colt_DemoHelper;
 	public static C4CApplicationHelper c4c_Helper;
 	public static OpportunitiesPage opportunityPage;
+	public static Connection listPriceConnection;
+	
+	// pages object initialization
+	protected Commerce_Management_Page commerceManagementPage;
+	protected static Model_Configuration_Page modelConfigurationPage;
+	protected Product_List_Page productListPage;
+	protected Transaction_Page transactionPage;
 
 	private static final Logger logger = LoggerFactory.getLogger(DriverTestCase.class);
 	public static LocatorReader loctorReader_1 = new LocatorReader("Colt_Demo.xml");
@@ -84,6 +91,10 @@ public abstract class DriverTestCase {
 		outsideBHI_Site_A, outsideBHI_Site_B, dual_Entry_Site_A, dual_Entry_Site_B, longLining_A,longLining_B,
 		ic_Site_A,ic_Site_B,lag_Site_A,lag_Site_B,diversity,cos,pr,pam,fastTrack,sync
 	}
+	
+	public enum CurrencyType {
+		EUR, GBP, USD, DKK, CHF, SEK
+	}
 
 	@BeforeSuite
 	public void before() {
@@ -108,7 +119,7 @@ public abstract class DriverTestCase {
 		else if (DriverType.IE.toString().equals(driverType)) {
 			String path1 = getPath();
 			File file = new File(path1 + File.separator + "IEDriverServer.exe");
-			System.setProperty("webdriver.ie.driver", file.getAbsolutePath());
+			System.setProperty("webdriver.ie.driver", ".\\drivers\\IEDriverServer.exe");
 			DesiredCapabilities capabilities = new DesiredCapabilities();
 			capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 			driver = new InternetExplorerDriver(capabilities);
@@ -139,6 +150,10 @@ public abstract class DriverTestCase {
 		colt_DemoHelper = new Colt_DemoHelper(getWebDriver());
 		c4c_Helper = new C4CApplicationHelper(getWebDriver());
 		opportunityPage = new OpportunitiesPage(getWebDriver());
+		modelConfigurationPage = PageFactory.initElements(getWebDriver(), Model_Configuration_Page.class);
+		productListPage = PageFactory.initElements(getWebDriver(), Product_List_Page.class);
+		transactionPage = PageFactory.initElements(getWebDriver(), Transaction_Page.class);
+		commerceManagementPage = PageFactory.initElements(getWebDriver(), Commerce_Management_Page.class);
 		
 
 	}
@@ -216,20 +231,6 @@ public abstract class DriverTestCase {
 		if (result.getStatus() == ITestResult.FAILURE) {
 			captureScreenshot1(result);
 		}
-
-		/*
-		 * if (result.getStatus() == ITestResult.FAILURE) {
-		 * captureScreenshot(result.getName()); test.log(LogStatus.FAIL,
-		 * "Test Case Failed is " + result.getName()); test.log(LogStatus.FAIL,
-		 * "Test Case Failed is " + result.getThrowable()); } else if
-		 * (result.getStatus() == ITestResult.SKIP) { test.log(LogStatus.SKIP,
-		 * "Test Case Skipped is " + result.getName()); }
-		 */
-		// ending test
-		// endTest(logger) : It ends the current test and prepares to create
-		// HTML report
-		//driver.quit();
-		// test.log(LogStatus.INFO, "Browser Closed Successfully");
 		extent.endTest(test);
 	}
 
@@ -249,7 +250,7 @@ public abstract class DriverTestCase {
 	@AfterSuite
 	public void tearDownSuite() {
 		//reporter.endReport();
-		driver.quit();
+		//driver.quit();
 		extent.flush();
 		extent.close();
 	}
