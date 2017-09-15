@@ -1,13 +1,17 @@
 package com.scripts;
 
 import org.openqa.selenium.Keys;
-import org.testng.Assert;
+import org.openqa.selenium.support.PageFactory;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
+
+import com.codoid.products.exception.FilloException;
+import com.pages.Model_Configuration_Page;
 import com.util.DataModelCPQ;
 import com.util.DataProviderRepository;
 import com.util.DriverTestCase;
+import com.util.ExcelDataBaseConnector;
 import com.util.Utilities;
 
 public class SingleTestInstance extends DriverTestCase {
@@ -22,6 +26,18 @@ public class SingleTestInstance extends DriverTestCase {
 		// reportLog("Navigating Application URl");
 		waitForAjaxRequestsToComplete();
 		c4c_Helper.loginToApplication(username, password);
+		listPriceConnection = ExcelDataBaseConnector.createConnection("List_Price_Small");
+	}
+
+	@AfterClass
+	public void closeConn() {
+		// close db
+		try {
+			ExcelDataBaseConnector.CloseTheConnection(listPriceConnection);
+		} catch (FilloException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test(dataProviderClass = DataProviderRepository.class, dataProvider = "getData")
@@ -55,7 +71,6 @@ public class SingleTestInstance extends DriverTestCase {
 			cpqModel.setPam(pam);
 			cpqModel.setPr(pr);
 			cpqModel.setFastTrack(fastTrack);
-
 			System.out.println(cpqModel.getContract_Term());
 
 			String[] array = { longLining_A, ic_Site_A, dual_Entry_Site_A, outsideBHI_Site_A, longLining_B, ic_Site_B,
@@ -162,7 +177,7 @@ public class SingleTestInstance extends DriverTestCase {
 			reportLog("Click on to AddToTransaction button");
 			// colt_DemoHelper.waitForWorkAroundTime(5000);
 			waitForAjaxRequestsToComplete();
-			boolean flag = colt_DemoHelper.verifyFieldDisplayed("AddToTransaction");
+			boolean flag = colt_DemoHelper.isElementDisplayed("AddToTransaction");
 			System.out.println("*********************" + flag);
 			if (flag)
 				colt_DemoHelper.click("AddToTransaction");
@@ -177,12 +192,177 @@ public class SingleTestInstance extends DriverTestCase {
 
 			colt_DemoHelper.click("OrderManager");
 			reportLog("Click on to Order Manager link");
-			
+
 			colt_DemoHelper.softAsserAll();
-			
+
 			/*
 			 * colt_DemoHelper.click("Logout"); reportLog("Log out from the application");
 			 */
-		} catch (Exception e) {		}
+		} catch (Exception e) {
+		}
+	}
+
+	@Test(dataProviderClass = DataProviderRepository.class, dataProvider = "testDataProvider")
+	public void test_02_check_Connectivity_and_price_of_sites_with_dataModel(Object obj) throws Exception {
+
+		String Description = "Quote_Desc_" + Utilities.getRandomInteger(1, 9999);
+		DataModelCPQ cpqModel = (DataModelCPQ) obj;
+		String mrc_Net_Price = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Zone 1 MRC");
+		System.out.println(mrc_Net_Price);
+		Double str = Utilities.currencyConvertor("1048.95565897", "DKK", "EUR");
+		
+		String nrc_Net_Price = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Zone 1 NRC");
+		System.out.println(nrc_Net_Price);
+
+		String currency = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Currency");
+		System.out.println(currency);
+
+		productListPage.clickOnOrderManagerLink();
+
+		// colt_DemoHelper.click("OrderManager");
+		// reportLog("Click on to Order Manager link");
+		// colt_DemoHelper._waitForJStoLoad();
+
+		colt_DemoHelper.verifyTitle("Commerce Management");
+		reportLog("Verifying the title Commerce Management");
+
+		commerceManagementPage.clickOnAddTransactionButton();
+		// colt_DemoHelper.click("NewTransaction");
+		reportLog("Click on to NewTransaction link");
+
+		colt_DemoHelper.verifyTitle("Transaction");
+		reportLog("Verifying the title 'Transaction'");
+
+		transactionPage.sendKeys(transactionPage.quoteName, cpqModel.getQuoteName());
+
+		// colt_DemoHelper.type("QuoteName", cpqModel.getQuoteName());
+		reportLog("Type QuoteName: " + cpqModel.getQuoteName());
+
+		transactionPage.sendKeys(transactionPage.quoteDescription, Description);
+
+		// colt_DemoHelper.type("Description", Description);
+		reportLog("Enter description: " + Description);
+
+		String currencyType = transactionPage.getUICurrencyType();
+
+		/*
+		 * colt_DemoHelper.click("smeSegment");
+		 * colt_DemoHelper.selectDropdown("smeSegment", cpqModel.getSegment());
+		 * reportLog("Select SME segment: " + cpqModel.getSegment());
+		 */
+
+		// colt_DemoHelper.javascriptButtonClick(colt_DemoHelper.addProductBtn);
+		// colt_DemoHelper._waitForJStoLoad();
+		transactionPage.click(transactionPage.addProductButton);
+		// colt_DemoHelper.click("AddProduct");
+		reportLog("Click on to AddProduct button");
+
+		colt_DemoHelper.verifyTitle("Product List");
+		reportLog("Verifying the title 'Product List'");
+
+		colt_DemoHelper.mouseMove("EtherNet");
+		reportLog("Mouse move to EtherNet link");
+
+		productListPage.click(productListPage.ethernetButton);
+		productListPage.click(productListPage.ethernetLineLink);
+		// colt_DemoHelper.click("EnternetLine");
+		reportLog("Click on to EnternetLine");
+
+		colt_DemoHelper.verifyTitle("Model Configuration");
+		reportLog("Verifying the title 'Model Configuration'");
+
+		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.resiliency, cpqModel.getResiliency());
+		// colt_DemoHelper.selectDropdown("Resiliency", cpqModel.getResiliency());
+		reportLog("Select Resiliency: " + cpqModel.getResiliency());
+
+		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.serviceBandwidth, cpqModel.getBandWidth());
+		// colt_DemoHelper.selectDropdown("BandWidth", cpqModel.getBandWidth());
+		reportLog("Select BandWidth: " + cpqModel.getBandWidth());
+
+		modelConfigurationPage.sendKeys(modelConfigurationPage.siteAddressAEnd, cpqModel.getSite_A_Add());
+		// colt_DemoHelper.type("SiteAAddress", cpqModel.getSite_A_Add());
+		colt_DemoHelper._waitForJStoLoad();
+		modelConfigurationPage.pressDownArrowKey();
+		modelConfigurationPage.pressEnterKey();
+		// colt_DemoHelper.selectAddress("SiteAAddress", Keys.DOWN);
+		// colt_DemoHelper.selectAddress("SiteAAddress", Keys.ENTER);
+		reportLog("Enter Site A address: " + cpqModel.getSite_A_Add());
+		colt_DemoHelper._waitForJStoLoad();
+
+		modelConfigurationPage.sendKeys(modelConfigurationPage.siteAddressBEnd, cpqModel.getSite_B_Add());
+		// colt_DemoHelper.type("SiteBAddress", cpqModel.getSite_B_Add());
+		colt_DemoHelper._waitForJStoLoad();
+		modelConfigurationPage.pressDownArrowKey();
+		modelConfigurationPage.pressEnterKey();
+		// colt_DemoHelper.selectAddress("SiteBAddress", Keys.DOWN);
+		// colt_DemoHelper.selectAddress("SiteBAddress", Keys.ENTER);
+		reportLog("Enter Site B address: " + cpqModel.getSite_B_Add());
+		colt_DemoHelper._waitForJStoLoad();
+
+		modelConfigurationPage.click(modelConfigurationPage.update);
+		reportLog("Click on to Update button");
+
+		// m.enterAddressManually("");
+
+		// colt_DemoHelper.enterAddressManually(cpqModel.getBuilding_Type());
+
+		// waitForAjaxRequestsToComplete();
+		modelConfigurationPage.click(modelConfigurationPage.checkConnectivityButton);
+		// colt_DemoHelper.click("CheckConnectivity");
+		reportLog("Click on to CheckConnectivity button");
+
+		modelConfigurationPage.verifyBlankConnectivity();
+		/*
+		 * String msg_A = modelConfigurationPage.getConnectivityMessageForAddress("A");
+		 * reportLog("Site A connectivity Message: " + msg_A); String msg_B =
+		 * modelConfigurationPage.getConnectivityMessageForAddress("B");
+		 * reportLog("Site B connectivity Message: " + msg_B);
+		 * colt_DemoHelper.verifyConnectivityMessage(msg_A, msg_B);
+		 */
+
+		colt_DemoHelper.verifyBlankPriceMessage();
+
+		colt_DemoHelper.verifyBuildingType(cpqModel.getBuilding_Type());
+
+		modelConfigurationPage.selectAddOns(cpqModel);
+
+		waitForAjaxRequestsToComplete();
+		boolean flag = modelConfigurationPage.isElementDisplayed(modelConfigurationPage.addToTransaction);
+		System.out.println("*********************" + flag);
+		if (flag) {
+			modelConfigurationPage.click(modelConfigurationPage.addToTransaction);
+			flag = false;
+
+		} else {
+			productListPage.clickOnOrderManagerLink();
+			reportLog("Click on to Order Manager link");
+		}
+		flag = modelConfigurationPage.isElementDisplayed(modelConfigurationPage.addToTransaction);
+		if (flag)
+			productListPage.clickOnOrderManagerLink();
+
+		scrollDown("400");
+		// String mrc_Net_Price =
+		// ExcelDataBaseConnector.executeSQLQuery(listPriceConnection,cpqModel, "Zone 1
+		// MRC");
+		// String nrc_Net_Price =
+		// ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Zone 1
+		// NRC");
+
+		colt_DemoHelper.verify_NRC_MRC_Prices(nrc_Net_Price, mrc_Net_Price);
+		// test.log(LogStatus.FAIL, "Verifying the MRC(net) Price of Site B.
+		// Actual: " +
+		// mrc_Net_Price + " Expected: " + mrc_Net_Price);
+
+		modelConfigurationPage.click(modelConfigurationPage.saveBtn);
+
+		productListPage.clickOnOrderManagerLink();
+		reportLog("Click on to Order Manager link");
+
+		colt_DemoHelper.softAsserAll();
+		/*
+		 * colt_DemoHelper.click("Logout"); reportLog("Log out from the application");
+		 */
+
 	}
 }
