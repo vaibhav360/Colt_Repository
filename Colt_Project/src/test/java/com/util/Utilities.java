@@ -1,9 +1,12 @@
 package com.util;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Random;
 
 import org.testng.Assert;
@@ -63,82 +66,86 @@ public class Utilities {
 		return sb.toString();
 	}
 
-	public static Double currencyConvertor(String dbPrice, String dbCurrency, String expectedCurrency) {
+	public static String currencyConvertor(String dbPrice, String dbCurrency, String expectedCurrency) {
 		Double price = Double.parseDouble(dbPrice);
-		Double tmp=0.0;
+		Double tmp = 0.0;
 
+		NumberFormat format = null;
 		CurrencyType expectedCurrecyType = CurrencyType.valueOf(expectedCurrency);
 
 		CurrencyType dbCurrecyType = CurrencyType.valueOf(dbCurrency);
 
 		switch (expectedCurrecyType) {
 		case EUR:
+			format = NumberFormat.getCurrencyInstance(Locale.GERMANY);
 			switch (dbCurrecyType) {
 			case EUR:
 				tmp = price;
 				break;
 			case GBP:
-				tmp = price * 0.841993;
+				tmp = price * 1.18765833;
 				break;
 			case USD:
-				tmp = price * 1.334005;
+				tmp = price * 0.749622378;
 				break;
 			case SEK:
-				tmp = price * 8.67667;
+				tmp = price * 0.115251588;
 				break;
 			case CHF:
-				tmp = price * 1.2344;
+				tmp = price * 0.810110175;
 				break;
 			case DKK:
-				tmp = price * 7.457935;
+				tmp = price * 0.134085373;
 				break;
 			default:
 				Assert.fail("Currency type fetched from DB is not found");
 			}
 			break;
 		case GBP:
+			format = NumberFormat.getCurrencyInstance(Locale.UK);
 			switch (dbCurrecyType) {
 			case GBP:
-				tmp = price ;
+				tmp = price;
 				break;
 			case USD:
-				tmp = price * 1.58434215;
+				tmp = price * 0.631176795;
 				break;
 			case SEK:
-				tmp = price *10.3049194;
+				tmp = price * 0.097041031;
 				break;
 			case CHF:
-				tmp = price * 1.466045442;
+				tmp = price * 0.682107097;
 				break;
 			case DKK:
-				tmp = price * 8.857478625;
+				tmp = price * 0.112898946;
 				break;
 			case EUR:
-				tmp = price * 1.18765833;
+				tmp = price * 0.841993000;
 				break;
 			default:
 				Assert.fail("Currency type fetched from DB is not found");
 			}
 			break;
 		case USD:
+			format = NumberFormat.getCurrencyInstance(Locale.US);
 			switch (dbCurrecyType) {
 			case USD:
-				tmp = price ;
+				tmp = price;
 				break;
 			case GBP:
-				tmp = price * 0.631176795;
+				tmp = price * 1.58434215;
 				break;
 			case SEK:
-				tmp = price * 6.504225996;
+				tmp = price * 0.153746195;
 				break;
 			case CHF:
-				tmp = price * 0.925333863;
+				tmp = price * 1.080691024;
 				break;
 			case DKK:
-				tmp = price * 5.590634968;
+				tmp = price * 0.178870559;
 				break;
 			case EUR:
-				tmp = price * 0.749622378;
+				tmp = price * 1.334005000;
 				break;
 			default:
 				Assert.fail("Currency type fetched from DB is not found");
@@ -147,9 +154,21 @@ public class Utilities {
 		default:
 			Assert.fail("Currency type not found");
 		}
-		
-		double finalValue = (double)Math.round( tmp * 100.0 ) / 100.0;
-		return finalValue;
+		BigDecimal payment = new BigDecimal(tmp);
+		double finalValue = payment.doubleValue();
+		String str = format.format(payment);
+		System.out.println(str);
+
+		if (expectedCurrency.equals("EUR"))
+			str = str.replace("€", "");
+		if (expectedCurrency.equals("USD"))
+			str = str.replace("$", "");
+		if (expectedCurrency.equals("GBP"))
+			str = str.replace("£", "");
+
+		System.out.println(str);
+		// double finalValue = (double)Math.round( tmp * 100.0 ) / 100.0;
+		return str;
 
 	}
 
