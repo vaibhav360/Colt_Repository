@@ -5,9 +5,13 @@
 		<listener class-name="com.report.CustomReport" />
 		<listener class-name="com.report.ExtentReporterNG" />
 	</listeners>
-	<test name="Check_Connectivity_With_AddOn's" junit="false" preserve-order="true">
+	<test name="Check_Connectivity_With_AddOn's" junit="false"
+		preserve-order="true">
 		<classes>
-			<class name="com.scripts.TestData_Validation_With_AddOns">
+			<class name="com.scripts.SingleTestInstance">
+				<methods>
+					<include name="test_02_check_Connectivity_and_price_of_sites_with_dataModel" />
+				</methods>
 			</class>
 
 		</classes>

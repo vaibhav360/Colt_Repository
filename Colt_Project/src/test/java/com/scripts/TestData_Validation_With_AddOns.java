@@ -150,7 +150,7 @@ public class TestData_Validation_With_AddOns extends DriverTestCase {
 		reportLog("Click on to AddToTransaction button");
 		// colt_DemoHelper.waitForWorkAroundTime(5000);
 		waitForAjaxRequestsToComplete();
-		boolean flag = colt_DemoHelper.verifyFieldDisplayed("AddToTransaction");
+		boolean flag = colt_DemoHelper.isElementDisplayed("AddToTransaction");
 		System.out.println("*********************" + flag);
 		if (flag)
 			colt_DemoHelper.click("AddToTransaction");
@@ -305,7 +305,7 @@ public class TestData_Validation_With_AddOns extends DriverTestCase {
 		reportLog("Click on to AddToTransaction button");
 		// colt_DemoHelper.waitForWorkAroundTime(5000);
 		waitForAjaxRequestsToComplete();
-		boolean flag = colt_DemoHelper.verifyFieldDisplayed("AddToTransaction");
+		boolean flag = colt_DemoHelper.isElementDisplayed("AddToTransaction");
 		System.out.println("*********************" + flag);
 		if (flag)
 			colt_DemoHelper.click("AddToTransaction");
