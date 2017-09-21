@@ -203,18 +203,18 @@ public class Model_Configuration_Page extends BasePage {
 		reportLog("Click on to Update button");
 	}
 
-	public void verifyBlankConnectivity() {
+	public void verifyConnectivity() {
 		boolean flag = isElementDisplayed(connectivityMsgA);
 		String siteA = null;
 		String siteB = null;
 		if (flag) {
 			siteA = connectivityMsgA.getText();
-			Assert.assertTrue(flag,"Site A address have connection issue. Getting Msg: "+siteA);
+			Assert.fail("Site A address have connection issue. Getting Msg: "+siteA);
 		}
 		flag = isElementDisplayed(connectivityMsgB);
 		if (flag) {
 			siteB = connectivityMsgB.getText();
-			Assert.assertTrue(flag,"Site A address have connection issue. Getting Msg: "+siteB);
+			Assert.fail("Site A address have connection issue. Getting Msg: "+siteB);
 		}
 
 	}
@@ -246,9 +246,6 @@ public class Model_Configuration_Page extends BasePage {
 	}
 	
 	public void selectAddOns(DataModelCPQ model) throws InterruptedException {
-
-		javascriptSendKeys(contractTerm, model.getContract_Term());
-		reportLog("Entering the Contract Term: " + model.getContract_Term());
 
 		javascriptButtonClick(addOnTab);
 		reportLog("Click on to the Add On Tab");
@@ -313,9 +310,18 @@ public class Model_Configuration_Page extends BasePage {
 	public void clickParticularAddOn(WebElement locator, String data) throws InterruptedException {
 
 		if (!(data == null || data.equals("No"))) {
-			 waitAndClick(locator);
+			javascriptScrollIntoView(locator); 
+			waitAndClick(locator);
 			_waitForJStoLoad();
 		}
+	}
+	
+	public void enterContractTerm(String term)  {
+		
+		term= term.indexOf(".") < 0 ? term : term.replaceAll("0*$", "").replaceAll("\\.$", "");
+		javascriptSendKeys(contractTerm,term);
+		_waitForJStoLoad();
+		reportLog("Contract Term: " + term);
 	}
 
 }

@@ -256,15 +256,15 @@ public class Colt_DemoHelper extends BasePage {
 		}
 
 		if (priceColumn.equals("MRC (net)")) {
-			locator = "//*[text()='" + product + "']/../../../following-sibling::td[8]";
+			locator = "//*[text()='" + product + "']/../../../following-sibling::td[9]";
 		}
 		String price = getText(locator);
-		if (price.contains("$"))
+		/*if (price.contains("$"))
 			price = price.replace("$", "");
 		else if (price.contains("€")) // Alt 0128
 			price = price.replace("€", "");
 		else if (price.contains("£")) // Alt 156
-			price = price.replace("£", "");
+			price = price.replace("£", "");*/
 		return price;
 	}
 
@@ -360,12 +360,12 @@ public class Colt_DemoHelper extends BasePage {
 	public void verify_NRC_MRC_Prices(String nrc, String mrc) {
 		String nrc_Net_Price = getProductPricingValues("Connectivity Charge", "NRC (net)");
 		String mrc_Net_Price = getProductPricingValues("Connectivity Charge", "MRC (net)");
-		softAssert.assertTrue(nrc_Net_Price.equals(nrc),
-				"Prices are not equal. Actual: " + nrc_Net_Price + " Expected: " + nrc);
-		reportLog("Verifying the NRC(net) Price of Site A. Actual: " + nrc_Net_Price + " Expected: " + nrc);
-		softAssert.assertTrue(mrc_Net_Price.equals(mrc),
-				"Prices are not equal. Actual: " + mrc_Net_Price + " Expected: " + mrc);
-		reportLog("Verifying the MRC(net) Price of Site B. Actual: " + mrc_Net_Price + " Expected: " + mrc);
+		Assert.assertTrue(nrc_Net_Price.contains(nrc),
+				"Prices Error. Actual: " + nrc_Net_Price + " **** Expected: " + nrc);
+		reportLog("NRC(net) Price: Actual: " + nrc_Net_Price + " <br /> Expected: " + nrc);
+		Assert.assertTrue(mrc_Net_Price.contains(mrc),
+				"Prices Error. Actual: " + mrc_Net_Price + " **** Expected: " + mrc);
+		reportLog("MRC(net) Price: Actual: " + mrc_Net_Price + "  <br /> Expected: " + mrc);
 		
 	}
 

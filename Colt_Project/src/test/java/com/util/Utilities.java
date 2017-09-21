@@ -2,6 +2,7 @@ package com.util;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -69,6 +70,7 @@ public class Utilities {
 	public static String currencyConvertor(String dbPrice, String dbCurrency, String expectedCurrency) {
 		Double price = Double.parseDouble(dbPrice);
 		Double tmp = 0.0;
+		
 
 		NumberFormat format = null;
 		CurrencyType expectedCurrecyType = CurrencyType.valueOf(expectedCurrency);
@@ -111,16 +113,16 @@ public class Utilities {
 				tmp = price * 0.631176795;
 				break;
 			case SEK:
-				tmp = price * 0.097041031;
+				tmp = price* 0.097041031;
 				break;
 			case CHF:
-				tmp = price * 0.682107097;
+				tmp = price* 0.682107097;
 				break;
 			case DKK:
-				tmp = price * 0.112898946;
+				tmp = price*0.112898946;
 				break;
 			case EUR:
-				tmp = price * 0.841993000;
+				tmp = price*0.841993000 ;
 				break;
 			default:
 				Assert.fail("Currency type fetched from DB is not found");
@@ -155,10 +157,11 @@ public class Utilities {
 			Assert.fail("Currency type not found");
 		}
 		BigDecimal payment = new BigDecimal(tmp);
-		double finalValue = payment.doubleValue();
-		String str = format.format(payment);
+		BigDecimal displayVal = payment.setScale(1, RoundingMode.DOWN);
+		String str = format.format(displayVal);
+		str = str.substring(0, str.length()-1);
 		System.out.println(str);
-
+		
 		if (expectedCurrency.equals("EUR"))
 			str = str.replace("€", "");
 		if (expectedCurrency.equals("USD"))
@@ -167,9 +170,47 @@ public class Utilities {
 			str = str.replace("£", "");
 
 		System.out.println(str);
-		// double finalValue = (double)Math.round( tmp * 100.0 ) / 100.0;
 		return str;
+		}
 
+
+	public static String nrcPriceAsPerContractTerm(String term,String nrc) {
+		BigDecimal ONE_HUNDRED = new BigDecimal(100);
+		BigDecimal _nrc = new BigDecimal(nrc);
+		BigDecimal finalNrc=new BigDecimal(nrc);
+		BigDecimal tmp=new BigDecimal("0");
+		Double _term = Double.parseDouble(term); 
+
+		if (_term > 23 && _term < 36) {
+			tmp = _nrc.multiply(new BigDecimal(25).divide(ONE_HUNDRED));
+			finalNrc = _nrc.subtract(tmp);
+		}
+
+		if (_term > 35 && _term < 48) {
+			tmp = _nrc.multiply(new BigDecimal(50).divide(ONE_HUNDRED));
+			finalNrc = _nrc.subtract(tmp);
+		}
+		return finalNrc.toString();
 	}
+	
+	public static String mrcPriceAsPerContractTerm(String term,String mrc) {
+		BigDecimal ONE_HUNDRED = new BigDecimal(100);
+		BigDecimal _mrc = new BigDecimal(mrc);
+		BigDecimal finalMrc=new BigDecimal(mrc);
+		BigDecimal tmp=new BigDecimal("0");
+		Double _term = Double.parseDouble(term); 
+		
+		if (_term > 23 && _term < 36) {
+			tmp = _mrc.multiply(new BigDecimal(5).divide(ONE_HUNDRED));
+			finalMrc = _mrc.subtract(tmp);
+		}
 
+		if (_term > 35 && _term < 48) {
+			tmp = _mrc.multiply(new BigDecimal(10).divide(ONE_HUNDRED));
+			finalMrc = _mrc.subtract(tmp);
+		}
+		
+		return finalMrc.toString();
+		
+	}
 }

@@ -30,6 +30,9 @@ public class Transaction_Page extends BasePage {
 	@FindBy(id = "readonly_1_currency_t")
 	public WebElement currency;
 
+	@FindBy(xpath = "//*[@id='field_wrapper_1_pricingSegment_t']/div[1]")
+	public WebElement segment;
+	
 	public void enterQuoteNameDescription(String name, String desc) {
 		verifyElementPresent(quoteName);
 	}
@@ -37,7 +40,16 @@ public class Transaction_Page extends BasePage {
 	public String getUICurrencyType() {
 		String type = currency.getText();
 		return type;
-
+	}
+	
+	public String getUISegment() {
+		String type = segment.getText();
+		return type;
 	}
 
+	public void clickOnAddProductBtn()
+	{
+		javascriptScrollIntoView(addProductButton);
+		click(addProductButton);
+	}
 }

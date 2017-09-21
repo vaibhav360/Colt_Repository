@@ -207,21 +207,19 @@ public class SingleTestInstance extends DriverTestCase {
 
 		String Description = "Quote_Desc_" + Utilities.getRandomInteger(1, 9999);
 		DataModelCPQ cpqModel = (DataModelCPQ) obj;
+
 		String mrc_Net_Price = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Zone 1 MRC");
-		System.out.println(mrc_Net_Price);
-		Double str = Utilities.currencyConvertor("1048.95565897", "DKK", "EUR");
-		
+		String _mrc_Net_Price = Utilities.mrcPriceAsPerContractTerm(cpqModel.getContract_Term(), mrc_Net_Price);
+		System.out.println(_mrc_Net_Price);
+
 		String nrc_Net_Price = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Zone 1 NRC");
-		System.out.println(nrc_Net_Price);
+		String _nrc_Net_Price = Utilities.nrcPriceAsPerContractTerm(cpqModel.getContract_Term(), nrc_Net_Price);
+		System.out.println(_nrc_Net_Price);
 
 		String currency = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Currency");
 		System.out.println(currency);
 
 		productListPage.clickOnOrderManagerLink();
-
-		// colt_DemoHelper.click("OrderManager");
-		// reportLog("Click on to Order Manager link");
-		// colt_DemoHelper._waitForJStoLoad();
 
 		colt_DemoHelper.verifyTitle("Commerce Management");
 		reportLog("Verifying the title Commerce Management");
@@ -244,17 +242,24 @@ public class SingleTestInstance extends DriverTestCase {
 		reportLog("Enter description: " + Description);
 
 		String currencyType = transactionPage.getUICurrencyType();
+		reportLog("Currency Type On UI: " + currencyType);
+		reportLog("Segment  On UI: " + cpqModel.getSegment());
 
-		/*
-		 * colt_DemoHelper.click("smeSegment");
-		 * colt_DemoHelper.selectDropdown("smeSegment", cpqModel.getSegment());
-		 * reportLog("Select SME segment: " + cpqModel.getSegment());
-		 */
+		if (!(mrc_Net_Price.equals("NA") || mrc_Net_Price == null)) {
+			String str = Utilities.currencyConvertor(_mrc_Net_Price, currency, currencyType);
+			_mrc_Net_Price = str;
+			System.out.println(str);
+			reportLog("MRC_Net Price after conversion: " + str);
+		}
 
-		// colt_DemoHelper.javascriptButtonClick(colt_DemoHelper.addProductBtn);
-		// colt_DemoHelper._waitForJStoLoad();
-		transactionPage.click(transactionPage.addProductButton);
-		// colt_DemoHelper.click("AddProduct");
+		if (!(nrc_Net_Price.equals("NA") || nrc_Net_Price == null)) {
+			String str = Utilities.currencyConvertor(_nrc_Net_Price, currency, currencyType);
+			_nrc_Net_Price = str;
+			System.out.println(str);
+			reportLog("NRC_Net Price after conversion: " + str);
+		}
+
+		transactionPage.clickOnAddProductBtn();
 		reportLog("Click on to AddProduct button");
 
 		colt_DemoHelper.verifyTitle("Product List");
@@ -272,97 +277,216 @@ public class SingleTestInstance extends DriverTestCase {
 		reportLog("Verifying the title 'Model Configuration'");
 
 		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.resiliency, cpqModel.getResiliency());
-		// colt_DemoHelper.selectDropdown("Resiliency", cpqModel.getResiliency());
 		reportLog("Select Resiliency: " + cpqModel.getResiliency());
 
 		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.serviceBandwidth, cpqModel.getBandWidth());
-		// colt_DemoHelper.selectDropdown("BandWidth", cpqModel.getBandWidth());
 		reportLog("Select BandWidth: " + cpqModel.getBandWidth());
 
 		modelConfigurationPage.sendKeys(modelConfigurationPage.siteAddressAEnd, cpqModel.getSite_A_Add());
-		// colt_DemoHelper.type("SiteAAddress", cpqModel.getSite_A_Add());
 		colt_DemoHelper._waitForJStoLoad();
 		modelConfigurationPage.pressDownArrowKey();
 		modelConfigurationPage.pressEnterKey();
-		// colt_DemoHelper.selectAddress("SiteAAddress", Keys.DOWN);
-		// colt_DemoHelper.selectAddress("SiteAAddress", Keys.ENTER);
 		reportLog("Enter Site A address: " + cpqModel.getSite_A_Add());
 		colt_DemoHelper._waitForJStoLoad();
 
 		modelConfigurationPage.sendKeys(modelConfigurationPage.siteAddressBEnd, cpqModel.getSite_B_Add());
-		// colt_DemoHelper.type("SiteBAddress", cpqModel.getSite_B_Add());
 		colt_DemoHelper._waitForJStoLoad();
 		modelConfigurationPage.pressDownArrowKey();
 		modelConfigurationPage.pressEnterKey();
-		// colt_DemoHelper.selectAddress("SiteBAddress", Keys.DOWN);
-		// colt_DemoHelper.selectAddress("SiteBAddress", Keys.ENTER);
 		reportLog("Enter Site B address: " + cpqModel.getSite_B_Add());
 		colt_DemoHelper._waitForJStoLoad();
 
 		modelConfigurationPage.click(modelConfigurationPage.update);
 		reportLog("Click on to Update button");
 
-		// m.enterAddressManually("");
-
-		// colt_DemoHelper.enterAddressManually(cpqModel.getBuilding_Type());
-
-		// waitForAjaxRequestsToComplete();
+		//modelConfigurationPage.enterAddressManually(cpqModel.getBuilding_Type());
+		
 		modelConfigurationPage.click(modelConfigurationPage.checkConnectivityButton);
-		// colt_DemoHelper.click("CheckConnectivity");
 		reportLog("Click on to CheckConnectivity button");
 
-		modelConfigurationPage.verifyBlankConnectivity();
-		/*
-		 * String msg_A = modelConfigurationPage.getConnectivityMessageForAddress("A");
-		 * reportLog("Site A connectivity Message: " + msg_A); String msg_B =
-		 * modelConfigurationPage.getConnectivityMessageForAddress("B");
-		 * reportLog("Site B connectivity Message: " + msg_B);
-		 * colt_DemoHelper.verifyConnectivityMessage(msg_A, msg_B);
-		 */
+		scrollDown("350");
+		modelConfigurationPage.verifyConnectivity();
 
 		colt_DemoHelper.verifyBlankPriceMessage();
 
 		colt_DemoHelper.verifyBuildingType(cpqModel.getBuilding_Type());
 
-		modelConfigurationPage.selectAddOns(cpqModel);
+		String contractTerm = cpqModel.getContract_Term();
+		modelConfigurationPage.enterContractTerm(contractTerm);
 
-		waitForAjaxRequestsToComplete();
+		modelConfigurationPage.click(modelConfigurationPage.addToTransaction);
+		
+		//modelConfigurationPage.selectAddOns(cpqModel);
+
+		//waitForAjaxRequestsToComplete();
 		boolean flag = modelConfigurationPage.isElementDisplayed(modelConfigurationPage.addToTransaction);
 		System.out.println("*********************" + flag);
 		if (flag) {
 			modelConfigurationPage.click(modelConfigurationPage.addToTransaction);
+			modelConfigurationPage._waitForJStoLoad();
 			flag = false;
-
-		} else {
-			productListPage.clickOnOrderManagerLink();
-			reportLog("Click on to Order Manager link");
 		}
-		flag = modelConfigurationPage.isElementDisplayed(modelConfigurationPage.addToTransaction);
-		if (flag)
+			scrollDown("500");
+
+			colt_DemoHelper.verify_NRC_MRC_Prices(_nrc_Net_Price, _mrc_Net_Price);
+
+			modelConfigurationPage.click(modelConfigurationPage.saveBtn);
+
 			productListPage.clickOnOrderManagerLink();
 
-		scrollDown("400");
-		// String mrc_Net_Price =
-		// ExcelDataBaseConnector.executeSQLQuery(listPriceConnection,cpqModel, "Zone 1
-		// MRC");
-		// String nrc_Net_Price =
-		// ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Zone 1
-		// NRC");
+			colt_DemoHelper.softAsserAll();
+			/*
+			 * colt_DemoHelper.click("Logout"); reportLog("Log out from the application");
+			 */
 
-		colt_DemoHelper.verify_NRC_MRC_Prices(nrc_Net_Price, mrc_Net_Price);
-		// test.log(LogStatus.FAIL, "Verifying the MRC(net) Price of Site B.
-		// Actual: " +
-		// mrc_Net_Price + " Expected: " + mrc_Net_Price);
+		
+	}
+	
+	@Test(dataProviderClass = DataProviderRepository.class, dataProvider = "testDataProvider")
+	public void test_03_check_Connectivity_And_Price_Of_sites_On_Basis_Of_UI_Segment(Object obj) throws Exception {
 
-		modelConfigurationPage.click(modelConfigurationPage.saveBtn);
+		String Description = "Quote_Desc_" + Utilities.getRandomInteger(1, 9999);
+		DataModelCPQ cpqModel = (DataModelCPQ) obj;
+
+		/*String mrc_Net_Price = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Zone 1 MRC");
+		String _mrc_Net_Price = Utilities.mrcPriceAsPerContractTerm(cpqModel.getContract_Term(), mrc_Net_Price);
+		System.out.println(_mrc_Net_Price);
+
+		String nrc_Net_Price = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Zone 1 NRC");
+		String _nrc_Net_Price = Utilities.nrcPriceAsPerContractTerm(cpqModel.getContract_Term(), nrc_Net_Price);
+		System.out.println(_nrc_Net_Price);
+
+		String currency = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Currency");
+		System.out.println(currency);*/
 
 		productListPage.clickOnOrderManagerLink();
-		reportLog("Click on to Order Manager link");
 
-		colt_DemoHelper.softAsserAll();
-		/*
-		 * colt_DemoHelper.click("Logout"); reportLog("Log out from the application");
-		 */
+		colt_DemoHelper.verifyTitle("Commerce Management");
+		reportLog("Verifying the title Commerce Management");
 
+		commerceManagementPage.clickOnAddTransactionButton();
+		// colt_DemoHelper.click("NewTransaction");
+		reportLog("Click on to NewTransaction link");
+
+		colt_DemoHelper.verifyTitle("Transaction");
+		reportLog("Verifying the title 'Transaction'");
+
+		transactionPage.sendKeys(transactionPage.quoteName, cpqModel.getQuoteName());
+
+		// colt_DemoHelper.type("QuoteName", cpqModel.getQuoteName());
+		reportLog("Type QuoteName: " + cpqModel.getQuoteName());
+
+		transactionPage.sendKeys(transactionPage.quoteDescription, Description);
+		reportLog("Enter description: " + Description);
+		
+		String currencyType = transactionPage.getUICurrencyType();
+		String segment = transactionPage.getUISegment();
+		
+		String mrc_Net_Price = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Zone 1 MRC");
+		String _mrc_Net_Price = Utilities.mrcPriceAsPerContractTerm(cpqModel.getContract_Term(), mrc_Net_Price);
+		System.out.println(_mrc_Net_Price);
+
+		String nrc_Net_Price = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Zone 1 NRC");
+		String _nrc_Net_Price = Utilities.nrcPriceAsPerContractTerm(cpqModel.getContract_Term(), nrc_Net_Price);
+		System.out.println(_nrc_Net_Price);
+
+		String currency = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, cpqModel, "Currency");
+		System.out.println(currency);
+
+		if (!(mrc_Net_Price.equals("NA") || mrc_Net_Price == null)) {
+			String str = Utilities.currencyConvertor(_mrc_Net_Price, currency, currencyType);
+			_mrc_Net_Price = str;
+			System.out.println(str);
+			reportLog("MRC_Net Price after conversion: " + str);
+		}
+
+		if (!(nrc_Net_Price.equals("NA") || nrc_Net_Price == null)) {
+			String str = Utilities.currencyConvertor(_nrc_Net_Price, currency, currencyType);
+			_nrc_Net_Price = str;
+			System.out.println(str);
+			reportLog("NRC_Net Price after conversion: " + str);
+		}
+
+		transactionPage.clickOnAddProductBtn();
+		reportLog("Click on to AddProduct button");
+
+		colt_DemoHelper.verifyTitle("Product List");
+		reportLog("Verifying the title 'Product List'");
+
+		colt_DemoHelper.mouseMove("EtherNet");
+		reportLog("Mouse move to EtherNet link");
+
+		productListPage.click(productListPage.ethernetButton);
+		productListPage.click(productListPage.ethernetLineLink);
+		// colt_DemoHelper.click("EnternetLine");
+		reportLog("Click on to EnternetLine");
+
+		colt_DemoHelper.verifyTitle("Model Configuration");
+		reportLog("Verifying the title 'Model Configuration'");
+
+		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.resiliency, cpqModel.getResiliency());
+		reportLog("Select Resiliency: " + cpqModel.getResiliency());
+
+		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.serviceBandwidth, cpqModel.getBandWidth());
+		reportLog("Select BandWidth: " + cpqModel.getBandWidth());
+
+		modelConfigurationPage.sendKeys(modelConfigurationPage.siteAddressAEnd, cpqModel.getSite_A_Add());
+		colt_DemoHelper._waitForJStoLoad();
+		modelConfigurationPage.pressDownArrowKey();
+		modelConfigurationPage.pressEnterKey();
+		reportLog("Enter Site A address: " + cpqModel.getSite_A_Add());
+		colt_DemoHelper._waitForJStoLoad();
+
+		modelConfigurationPage.sendKeys(modelConfigurationPage.siteAddressBEnd, cpqModel.getSite_B_Add());
+		colt_DemoHelper._waitForJStoLoad();
+		modelConfigurationPage.pressDownArrowKey();
+		modelConfigurationPage.pressEnterKey();
+		reportLog("Enter Site B address: " + cpqModel.getSite_B_Add());
+		colt_DemoHelper._waitForJStoLoad();
+
+		modelConfigurationPage.click(modelConfigurationPage.update);
+		reportLog("Click on to Update button");
+
+		//modelConfigurationPage.enterAddressManually(cpqModel.getBuilding_Type());
+		
+		modelConfigurationPage.click(modelConfigurationPage.checkConnectivityButton);
+		reportLog("Click on to CheckConnectivity button");
+
+		modelConfigurationPage.verifyConnectivity();
+
+		colt_DemoHelper.verifyBlankPriceMessage();
+
+		colt_DemoHelper.verifyBuildingType(cpqModel.getBuilding_Type());
+
+		String contractTerm = cpqModel.getContract_Term();
+		modelConfigurationPage.enterContractTerm(contractTerm);
+
+		modelConfigurationPage.click(modelConfigurationPage.addToTransaction);
+		
+		//modelConfigurationPage.selectAddOns(cpqModel);
+
+		//waitForAjaxRequestsToComplete();
+		boolean flag = modelConfigurationPage.isElementDisplayed(modelConfigurationPage.addToTransaction);
+		System.out.println("*********************" + flag);
+		if (flag) {
+			modelConfigurationPage.click(modelConfigurationPage.addToTransaction);
+			modelConfigurationPage._waitForJStoLoad();
+			flag = false;
+		}
+			scrollDown("500");
+
+			colt_DemoHelper.verify_NRC_MRC_Prices(_nrc_Net_Price, _mrc_Net_Price);
+
+			modelConfigurationPage.click(modelConfigurationPage.saveBtn);
+
+			productListPage.clickOnOrderManagerLink();
+			reportLog("Click on to Order Manager link");
+
+			colt_DemoHelper.softAsserAll();
+			/*
+			 * colt_DemoHelper.click("Logout"); reportLog("Log out from the application");
+			 */
+
+		
 	}
 }
