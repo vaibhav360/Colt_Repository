@@ -129,7 +129,8 @@ public abstract class BasePage extends DriverTestCase {
 			clickOn(locator);
 			_waitForJStoLoad();
 		} catch (Exception e) {
-			reportLog(e.getMessage());
+			Assert.fail("Locator: " + locator + "is not clickable due to </br> " + e.getMessage());
+			// reportLog(e.getMessage());
 		}
 	}
 
@@ -188,10 +189,12 @@ public abstract class BasePage extends DriverTestCase {
 	}
 
 	public void verifyTitle(String title) {
-		waitForWorkAroundTime(4000);
+		_waitForJStoLoad();
+		sleepExecution(3);
 		String actualTitle = getWebDriver().getTitle();
 		Assert.assertTrue(actualTitle.contains(title));
-		reportLog("Expected Title: " + title + "" + " <br /> Actual Title: " + actualTitle);
+		// reportLog("Expected Title: " + title + "" + " <br /> Actual Title: " +
+		// actualTitle);
 	}
 
 	public void mouseOver(String locator) {
@@ -263,10 +266,11 @@ public abstract class BasePage extends DriverTestCase {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", element);
 	}
-	
+
 	public void javascriptButtonClick(WebElement locator) {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", locator);
+		_waitForJStoLoad();
 	}
 
 	public void javascriptSendKeys(String locator, String data) {
@@ -274,7 +278,7 @@ public abstract class BasePage extends DriverTestCase {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].value='" + data + "'", element);
 	}
-	
+
 	public void javascriptSendKeys(WebElement locator, String data) {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].value='" + data + "'", locator);
@@ -285,13 +289,12 @@ public abstract class BasePage extends DriverTestCase {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		jse.executeScript("arguments[0].scrollIntoView()", element);
 	}
-	
+
 	public void javascriptScrollIntoView(WebElement locator) {
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
 		jse.executeScript("arguments[0].scrollIntoView()", locator);
 	}
-	
-	
+
 	public WebElement fluentWait(final By locator) {
 		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(30, TimeUnit.SECONDS)
 				.pollingEvery(5, TimeUnit.SECONDS).ignoring(NoSuchElementException.class);
@@ -352,7 +355,7 @@ public abstract class BasePage extends DriverTestCase {
 			WebDriverWait wait = new WebDriverWait(driver, DEFAULT_WAIT_4_ELEMENT);
 			wait.until(ExpectedConditions.visibilityOf(element));
 		} catch (Exception e) {
-			reportLog(element.toString() + " is not present on page");
+			Assert.fail(e.toString());
 		}
 	}
 
@@ -389,7 +392,7 @@ public abstract class BasePage extends DriverTestCase {
 			}
 		};
 
-		WebDriverWait wait = new WebDriverWait(driver, DEFAULT_WAIT_4_PAGE);
+		WebDriverWait wait = new WebDriverWait(getWebDriver(), DEFAULT_WAIT_4_PAGE);
 		boolean waitDone = wait.until(jQueryLoad) && wait.until(jsLoad);
 		return waitDone;
 	}
@@ -403,7 +406,7 @@ public abstract class BasePage extends DriverTestCase {
 		}
 		return false;
 	}
-	
+
 	public Boolean isElementDisplayed(WebElement element) {
 		try {
 			element.isDisplayed();
@@ -414,7 +417,6 @@ public abstract class BasePage extends DriverTestCase {
 	}
 
 	public void verifyElementPresent(WebElement element) {
-		// _waitForJStoLoad();
 		Assert.assertTrue(isElementPresent(element), element.toString() + " is not present");
 	}
 
@@ -458,7 +460,7 @@ public abstract class BasePage extends DriverTestCase {
 
 	public WebDriver mouseClick(WebElement element) {
 		Actions builder = new Actions(driver);
-		builder.click(element).build().perform();
+		builder.moveToElement(element).perform();
 		return driver;
 	}
 
@@ -471,7 +473,9 @@ public abstract class BasePage extends DriverTestCase {
 	 */
 	public void selectDropDownByText(WebElement element, String targetValue) {
 		waitForElement(element);
-		new Select(element).selectByVisibleText(targetValue);
+		String tmp = new Select(element).getFirstSelectedOption().getText();
+		if (!(tmp.equals(targetValue)))
+			new Select(element).selectByVisibleText(targetValue);
 	}
 
 	/*
@@ -497,4 +501,25 @@ public abstract class BasePage extends DriverTestCase {
 		waitForElement(element);
 		new Select(element).selectByValue(targetValue);
 	}
+
+	public void switchWindow(String title) {
+		for (String windowhandle : getWebDriver().getWindowHandles()) {
+			getWebDriver().switchTo().window(windowhandle);
+			if (getWebDriver().getTitle().contains(title)) {
+				break;
+			}
+		}
+	}
+
+	public WebDriver doubleClick(WebElement element) {
+		Actions builder = new Actions(driver);
+		builder.doubleClick(element).build().perform();
+		return driver;
+	}
+
+	public void logOutFromCPQ() {
+		click(transactionPage.logOutBtn);
+		reportLog("Log out from the application");
+	}
+
 }

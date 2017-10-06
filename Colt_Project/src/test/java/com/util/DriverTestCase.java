@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -34,10 +33,9 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import com.codoid.products.fillo.Connection;
-import com.locators.LocatorReader;
-import com.pagehelper.C4CApplicationHelper;
-import com.pagehelper.Colt_DemoHelper;
-import com.pagehelper.OpportunitiesPage;
+import com.constants.GlobalConstant.FileNames;
+import com.pages.C4CAppPage;
+import com.pages.OpportunitiesPage;
 import com.pages.Commerce_Management_Page;
 import com.pages.Model_Configuration_Page;
 import com.pages.Product_List_Page;
@@ -50,41 +48,50 @@ public abstract class DriverTestCase {
 
 	public static ExtentTest test;
 	public static ExtentReports extent;
-	protected static final int DEFAULT_WAIT_4_ELEMENT = 10;
+	protected static final int DEFAULT_WAIT_4_ELEMENT = 5;
 	protected static final int DEFAULT_WAIT_4_PAGE = 30;
 	protected static WebDriverWait ajaxWait;
 	protected long timeout = 60;
-	public static Colt_DemoHelper colt_DemoHelper;
-	public static C4CApplicationHelper c4c_Helper;
 	public static OpportunitiesPage opportunityPage;
 	public static Connection listPriceConnection;
 	
 	// pages object initialization
-	protected Commerce_Management_Page commerceManagementPage;
+	protected static Commerce_Management_Page commerceManagementPage;
 	protected static Model_Configuration_Page modelConfigurationPage;
-	protected Product_List_Page productListPage;
-	protected Transaction_Page transactionPage;
+	protected static Product_List_Page productListPage;
+	protected static Transaction_Page transactionPage;
+	public static C4CAppPage c4cappPage;
 
 	private static final Logger logger = LoggerFactory.getLogger(DriverTestCase.class);
-	public static LocatorReader loctorReader_1 = new LocatorReader("Colt_Demo.xml");
 
 	// Define objects
 	protected WebDriver driver;
 	// Initialize objects
-	protected PropertyReader propertyReader = new PropertyReader();
+	protected PropertyReader configReader = new PropertyReader(FileNames.TestDataRelativePath.toString()+FileNames.CONFIG.toString());
+	protected PropertyReader c4cpropertyReader = new PropertyReader(FileNames.C4C_TEST_DATA.toString());
+	protected PropertyReader cpqpropertyReader = new PropertyReader(FileNames.CPQ_TEST_DATA.toString());
 	// Define variables
-	protected String application_url = propertyReader.readApplicationFile("ApplicationURL");
-	protected String stackValue = propertyReader.readApplicationFile("StackValue");
-	protected String c4c_url = propertyReader.readApplicationFile("C4C_URL");
-	String username = propertyReader.readApplicationFile("Username");
-	String password = propertyReader.readApplicationFile("Password");
+	protected String application_url = configReader.readApplicationFile("ApplicationURL");
+	protected String stackValue = configReader.readApplicationFile("StackValue");
+	protected String c4c_url = configReader.readApplicationFile("C4C_URL");
+	protected String username = configReader.readApplicationFile("Username");
+	protected String password = configReader.readApplicationFile("Password");
+	protected String c4c_userName = configReader.readApplicationFile("C4C_Username");
+	protected String c4c_Password = configReader.readApplicationFile("C4C_Password");
+	protected String deal_user = configReader.readApplicationFile("DealPriceUser");
+	protected String deal_user_password = configReader.readApplicationFile("DealPriceUserPassword");
+	protected String salesapprover_user = configReader.readApplicationFile("SalesApproverUser");
+	protected String salesapprover_password = configReader.readApplicationFile("SalesApproverPassword");
+	protected String financeapprover_user = configReader.readApplicationFile("FinanaceApproverUser");
+	protected String financeapprover_password = configReader.readApplicationFile("FinanaceApproverPassword");
 
 	enum DriverType {
 		Firefox, IE, Chrome
 	}
 
 	public enum BuildingType {
-		RB_RB, RB_DC_K, RB_DC_S, DC_K_DC_K, DC_S_DC_S,DC_S_DC_K
+		RB_RB, RB_DC_K, RB_DC_S, DC_K_DC_K, DC_S_DC_S,DC_S_DC_K,
+		RB,DC_C,DC_S
 	}
 	
 	public enum AddOns {
@@ -94,6 +101,10 @@ public abstract class DriverTestCase {
 	
 	public enum CurrencyType {
 		EUR, GBP, USD, DKK, CHF, SEK
+	}
+	
+	public enum DiscountType {
+		PERCENTAGE, AMOUNT, TARGET
 	}
 
 	@BeforeSuite
@@ -107,7 +118,7 @@ public abstract class DriverTestCase {
 		/*test = extent.startTest(this.getClass().getSimpleName(), Method.class.getName());
 		test.assignAuthor("360Logica");
 		test.assignCategory(this.getClass().getSimpleName());*/
-		String driverType = propertyReader.readApplicationFile("BROWSER");
+		String driverType = configReader.readApplicationFile("BROWSER");
 
 		if (DriverType.Firefox.toString().equals(driverType)) {
 			String fireFoxDriverPath = getPath() + File.separator + "drivers" + File.separator
@@ -140,60 +151,24 @@ public abstract class DriverTestCase {
 			driver = new FirefoxDriver();
 		}
 
-		//test.log(LogStatus.INFO, "Browser Launched Successfully");
 		// Maximize window
 		driver.manage().window().maximize();
 
 		// Delete cookies
 		driver.manage().deleteAllCookies();
 		driver.manage().timeouts().implicitlyWait(DEFAULT_WAIT_4_ELEMENT, TimeUnit.SECONDS);
-		colt_DemoHelper = new Colt_DemoHelper(getWebDriver());
-		c4c_Helper = new C4CApplicationHelper(getWebDriver());
-		opportunityPage = new OpportunitiesPage(getWebDriver());
+		opportunityPage = PageFactory.initElements(getWebDriver(), OpportunitiesPage.class);
 		modelConfigurationPage = PageFactory.initElements(getWebDriver(), Model_Configuration_Page.class);
 		productListPage = PageFactory.initElements(getWebDriver(), Product_List_Page.class);
 		transactionPage = PageFactory.initElements(getWebDriver(), Transaction_Page.class);
 		commerceManagementPage = PageFactory.initElements(getWebDriver(), Commerce_Management_Page.class);
+		c4cappPage = PageFactory.initElements(getWebDriver(), C4CAppPage.class);
 		
 
 	}
 
-	public void loginToApplication(String username, String password) throws InterruptedException {
-		// LocatorReader loctorReader = new LocatorReader("Colt_Demo.xml");
-
-		String id = loctorReader_1.getLocator("Username");
-		String pwd = loctorReader_1.getLocator("Password");
-		String login = loctorReader_1.getLocator("Login");
-		try {
-			Thread.sleep(2000);
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		getWebDriver().findElement(By.xpath(id)).sendKeys(username);
-		waitForAjaxRequestsToComplete();
-		getWebDriver().findElement(By.xpath(pwd)).sendKeys(password);
-		waitForAjaxRequestsToComplete();
-		getWebDriver().findElement(By.xpath(login)).click();
-		waitForAjaxRequestsToComplete();
-	}
-
 	/* capturing screenshot */
-	public void captureScreenshot(String fileName) {
-		try {
-			String screenshotName = Utilities.getFileName(fileName);
-			FileOutputStream out = new FileOutputStream("screenshots//" + screenshotName + ".png");
-			out.write(((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES));
-			out.close();
-			String path = getPath();
-			String screen = "file://" + path + "/screenshots/" + screenshotName + ".png";
-			test.log(LogStatus.FAIL, test.addScreenCapture(screen));
-			reportLog("<a href= '" + screen + "'target='_blank' ><img src='" + screen + "'>" + screenshotName + "</a>");
-		} catch (Exception e) {
-			System.out.println(e.getStackTrace());
-		}
-	}
-
-	public void captureScreenshot1(ITestResult result) throws IOException, InterruptedException {
+	public void captureScreenshot(ITestResult result) throws IOException, InterruptedException {
 		try {
 			String screenshotName = Utilities.getFileName(result.getName());
 			File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
@@ -216,12 +191,14 @@ public abstract class DriverTestCase {
 		}
 	}
 
-	@BeforeMethod
-	public void startTest()
+	@BeforeMethod	
+	public void startTest(Method method)
 	{
-		test = extent.startTest(this.getClass().getSimpleName(), Method.class.getName());
+		test = extent.startTest(method.getName());
 		test.assignAuthor("360Logica");
-		test.assignCategory(this.getClass().getSimpleName());
+		test.assignCategory(this.getClass().getCanonicalName());
+		System.out.println(method.getName());
+		System.out.println(test.getDescription());
 		
 	}
 	
@@ -229,11 +206,12 @@ public abstract class DriverTestCase {
 	public void afterMethod(ITestResult result) throws IOException, InterruptedException {
 
 		if (result.getStatus() == ITestResult.FAILURE) {
-			captureScreenshot1(result);
+			captureScreenshot(result);
 		}
 		extent.endTest(test);
+		System.out.println("****************************************");
 	}
-
+	
 	public WebDriver getWebDriver() {
 		return this.driver;
 	}
@@ -250,7 +228,7 @@ public abstract class DriverTestCase {
 	@AfterSuite
 	public void tearDownSuite() {
 		//reporter.endReport();
-		//driver.quit();
+		//getWebDriver().quit();
 		extent.flush();
 		extent.close();
 	}
@@ -268,7 +246,7 @@ public abstract class DriverTestCase {
 	 * @author himanshud
 	 * @throws InterruptedException
 	 */
-	public void waitForAjaxRequestsToComplete() throws InterruptedException  {
+	public void waitForAjaxRequestsToComplete() {
 		Wait<WebDriver> wait = new WebDriverWait(getWebDriver(), timeout);
 		wait.until(new Function<WebDriver, Boolean>() {
 			public Boolean apply(WebDriver driver) {
@@ -278,7 +256,12 @@ public abstract class DriverTestCase {
 						.equals("complete");
 			}
 		});
-		Thread.sleep(2000);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -287,7 +270,7 @@ public abstract class DriverTestCase {
 	 * @Param pixel pixel to scroll down
 	 */
 	public void scrollDown(String pixel) {
-		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
 		jse.executeScript("window.scrollBy(0," + pixel + ")", "");
 	}
 }

@@ -68,118 +68,118 @@ public class Utilities {
 	}
 
 	public static String currencyConvertor(String dbPrice, String dbCurrency, String expectedCurrency) {
-		Double price = Double.parseDouble(dbPrice);
-		Double tmp = 0.0;
-		
+		String finalPrice = null;
+		if (!(dbPrice.equals("NA") || dbPrice == null)) {
 
-		NumberFormat format = null;
-		CurrencyType expectedCurrecyType = CurrencyType.valueOf(expectedCurrency);
+			Double price = Double.parseDouble(dbPrice);
+			Double tmp = 0.0;
 
-		CurrencyType dbCurrecyType = CurrencyType.valueOf(dbCurrency);
+			NumberFormat format = null;
+			CurrencyType expectedCurrecyType = CurrencyType.valueOf(expectedCurrency);
 
-		switch (expectedCurrecyType) {
-		case EUR:
-			format = NumberFormat.getCurrencyInstance(Locale.GERMANY);
-			switch (dbCurrecyType) {
+			CurrencyType dbCurrecyType = CurrencyType.valueOf(dbCurrency);
+
+			switch (expectedCurrecyType) {
 			case EUR:
-				tmp = price;
+				format = NumberFormat.getCurrencyInstance(Locale.GERMANY);
+				switch (dbCurrecyType) {
+				case EUR:
+					tmp = price;
+					break;
+				case GBP:
+					tmp = price * 1.18765833;
+					break;
+				case USD:
+					tmp = price * 0.749622378;
+					break;
+				case SEK:
+					tmp = price * 0.115251588;
+					break;
+				case CHF:
+					tmp = price * 0.810110175;
+					break;
+				case DKK:
+					tmp = price * 0.134085373;
+					break;
+				default:
+					Assert.fail("Currency type fetched from DB is not found");
+				}
 				break;
 			case GBP:
-				tmp = price * 1.18765833;
+				format = NumberFormat.getCurrencyInstance(Locale.UK);
+				switch (dbCurrecyType) {
+				case GBP:
+					tmp = price;
+					break;
+				case USD:
+					tmp = price * 0.631176795;
+					break;
+				case SEK:
+					tmp = price * 0.097041031;
+					break;
+				case CHF:
+					tmp = price * 0.682107097;
+					break;
+				case DKK:
+					tmp = price * 0.112898946;
+					break;
+				case EUR:
+					tmp = price * 0.841993000;
+					break;
+				default:
+					Assert.fail("Currency type fetched from DB is not found");
+				}
 				break;
 			case USD:
-				tmp = price * 0.749622378;
-				break;
-			case SEK:
-				tmp = price * 0.115251588;
-				break;
-			case CHF:
-				tmp = price * 0.810110175;
-				break;
-			case DKK:
-				tmp = price * 0.134085373;
-				break;
-			default:
-				Assert.fail("Currency type fetched from DB is not found");
-			}
-			break;
-		case GBP:
-			format = NumberFormat.getCurrencyInstance(Locale.UK);
-			switch (dbCurrecyType) {
-			case GBP:
-				tmp = price;
-				break;
-			case USD:
-				tmp = price * 0.631176795;
-				break;
-			case SEK:
-				tmp = price* 0.097041031;
-				break;
-			case CHF:
-				tmp = price* 0.682107097;
-				break;
-			case DKK:
-				tmp = price*0.112898946;
-				break;
-			case EUR:
-				tmp = price*0.841993000 ;
+				format = NumberFormat.getCurrencyInstance(Locale.US);
+				switch (dbCurrecyType) {
+				case USD:
+					tmp = price;
+					break;
+				case GBP:
+					tmp = price * 1.58434215;
+					break;
+				case SEK:
+					tmp = price * 0.153746195;
+					break;
+				case CHF:
+					tmp = price * 1.080691024;
+					break;
+				case DKK:
+					tmp = price * 0.178870559;
+					break;
+				case EUR:
+					tmp = price * 1.334005000;
+					break;
+				default:
+					Assert.fail("Currency type fetched from DB is not found");
+				}
 				break;
 			default:
-				Assert.fail("Currency type fetched from DB is not found");
+				Assert.fail("Currency type not found");
 			}
-			break;
-		case USD:
-			format = NumberFormat.getCurrencyInstance(Locale.US);
-			switch (dbCurrecyType) {
-			case USD:
-				tmp = price;
-				break;
-			case GBP:
-				tmp = price * 1.58434215;
-				break;
-			case SEK:
-				tmp = price * 0.153746195;
-				break;
-			case CHF:
-				tmp = price * 1.080691024;
-				break;
-			case DKK:
-				tmp = price * 0.178870559;
-				break;
-			case EUR:
-				tmp = price * 1.334005000;
-				break;
-			default:
-				Assert.fail("Currency type fetched from DB is not found");
-			}
-			break;
-		default:
-			Assert.fail("Currency type not found");
+			BigDecimal payment = new BigDecimal(tmp);
+			BigDecimal displayVal = payment.setScale(1, RoundingMode.DOWN);
+			finalPrice = format.format(displayVal);
+			finalPrice = finalPrice.substring(0, finalPrice.length() - 4);
+			System.out.println(finalPrice);
+
+			if (expectedCurrency.equals("EUR"))
+				finalPrice = finalPrice.replace("€", "");
+			if (expectedCurrency.equals("USD"))
+				finalPrice = finalPrice.replace("$", "");
+			if (expectedCurrency.equals("GBP"))
+				finalPrice = finalPrice.replace("£", "");
 		}
-		BigDecimal payment = new BigDecimal(tmp);
-		BigDecimal displayVal = payment.setScale(1, RoundingMode.DOWN);
-		String str = format.format(displayVal);
-		str = str.substring(0, str.length()-1);
-		System.out.println(str);
-		
-		if (expectedCurrency.equals("EUR"))
-			str = str.replace("€", "");
-		if (expectedCurrency.equals("USD"))
-			str = str.replace("$", "");
-		if (expectedCurrency.equals("GBP"))
-			str = str.replace("£", "");
+		return finalPrice;
+	}
 
-		System.out.println(str);
-		return str;
-		}
-
-
-	public static String nrcPriceAsPerContractTerm(String term,String nrc) {
+	public static String nrcPriceAsPerContractTerm(String term, String nrc) {
 		BigDecimal ONE_HUNDRED = new BigDecimal(100);
 		BigDecimal _nrc = new BigDecimal(nrc);
-		BigDecimal finalNrc=new BigDecimal(nrc);
-		BigDecimal tmp=new BigDecimal("0");
-		Double _term = Double.parseDouble(term); 
+		BigDecimal finalNrc = new BigDecimal(nrc);
+		BigDecimal tmp = new BigDecimal("0");
+		Double _term = Double.parseDouble(term);
 
 		if (_term > 23 && _term < 36) {
 			tmp = _nrc.multiply(new BigDecimal(25).divide(ONE_HUNDRED));
@@ -192,14 +192,14 @@ public class Utilities {
 		}
 		return finalNrc.toString();
 	}
-	
-	public static String mrcPriceAsPerContractTerm(String term,String mrc) {
+
+	public static String mrcPriceAsPerContractTerm(String term, String mrc) {
 		BigDecimal ONE_HUNDRED = new BigDecimal(100);
 		BigDecimal _mrc = new BigDecimal(mrc);
-		BigDecimal finalMrc=new BigDecimal(mrc);
-		BigDecimal tmp=new BigDecimal("0");
-		Double _term = Double.parseDouble(term); 
-		
+		BigDecimal finalMrc = new BigDecimal(mrc);
+		BigDecimal tmp = new BigDecimal("0");
+		Double _term = Double.parseDouble(term);
+
 		if (_term > 23 && _term < 36) {
 			tmp = _mrc.multiply(new BigDecimal(5).divide(ONE_HUNDRED));
 			finalMrc = _mrc.subtract(tmp);
@@ -209,8 +209,8 @@ public class Utilities {
 			tmp = _mrc.multiply(new BigDecimal(10).divide(ONE_HUNDRED));
 			finalMrc = _mrc.subtract(tmp);
 		}
-		
+
 		return finalMrc.toString();
-		
+
 	}
 }

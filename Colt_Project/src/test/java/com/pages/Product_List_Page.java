@@ -3,11 +3,7 @@ package com.pages;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.testng.Assert;
-
 import com.util.BasePage;
-import com.util.GlobalConstants;
-import com.util.DriverTestCase.BuildingType;
 
 public class Product_List_Page extends BasePage {
 
@@ -30,20 +26,31 @@ public class Product_List_Page extends BasePage {
 
 	public void AddproductType(String type) throws InterruptedException {
 
-		//mouseOver(ethernetButton);
-		if (type.equals("Ethernet"))
-			ethernetLineLink.click();
-		if (type.equals("Hub"))
-			ethernetHubSpokeLink.click();
-		
 		waitForAjaxRequestsToComplete();
+		transactionPage.clickOnAddProductBtn();
+		reportLog("Click on to AddProduct button");
+		_waitForJStoLoad();
+		ethernetButton.click();
+		reportLog("Mouse move to EtherNet link");
+
+		if (type.equals("Ethernet")) {
+			ethernetLineLink.click();
+			reportLog("Click on to EnternetLine Product");
+
+		}
+		if (type.equals("Hub")) {
+			ethernetHubSpokeLink.click();
+		}
+		_waitForJStoLoad();
+		waitForAjaxRequestsToComplete();
+		verifyTitle("Model Configuration");
+		reportLog("Verifying the title 'Model Configuration'");
 
 	}
-	
-	public void clickOnOrderManagerLink()
-	{
+
+	public void clickOnOrderManagerLink() {
 		javascriptScrollIntoView(oracleQuoteToOrderManagerLink);
-		//waitForElementVisible(oracleQuoteToOrderManagerLink);
+		// waitForElementVisible(oracleQuoteToOrderManagerLink);
 		waitAndClick(oracleQuoteToOrderManagerLink);
 		_waitForJStoLoad();
 		reportLog("Click on Order Manager Link");

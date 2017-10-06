@@ -58,6 +58,8 @@ public class ExcelDataBaseConnector {
 				+ model.getCoverage() + "' " + "AND Bandwidth='" + model.getBandWidth() + "' AND Resiliency ='"
 				+ model.getResiliency() + "'" + "AND Pricing_Segment ='" + model.getSegment() + "' AND Building_Type='"
 				+ model.getBuilding_Type() + "'";
+		
+		System.out.println(strQuery);
 
 		try {
 			rs = excelDb.executeQuery(strQuery);
@@ -71,6 +73,38 @@ public class ExcelDataBaseConnector {
 			err.printStackTrace();
 		}
 		return data;
+	}
+
+	public static String executeSQLQuery(Connection excelDb, String query, String column) {
+
+		String data = null;
+
+		try {
+			rs = excelDb.executeQuery(query);
+			while (rs.next()) {
+				data = rs.getField(column);
+			}
+		} catch (FilloException e) {
+			e.printStackTrace();
+		} catch (NullPointerException err) {
+			System.out.println("No Records obtained for this specific query");
+			err.printStackTrace();
+		}
+		return data;
+	}
+
+	public static String getSQLQuery(String type, DataModelCPQ model) {
+		String strQuery = null;
+
+		if (type.equals("Hub")) {
+			strQuery = "SELECT  * FROM Sheet1 WHERE Country = '" + model.getCountry()
+					+ "' AND Connection_Type='Hub' AND Pricing_Type='On-Net' AND Bandwidth='" + model.getBandWidth()
+					+ "' AND Resiliency ='" + model.getResiliency() + "'" + "AND Pricing_Segment ='"
+					+ model.getSegment() + "' AND Building_Type='" + model.getSiteABuildingType() + "'";
+		}
+
+		return strQuery;
+
 	}
 
 }

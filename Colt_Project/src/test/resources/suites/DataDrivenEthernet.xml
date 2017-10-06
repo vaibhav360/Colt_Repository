@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Colt_Suite">
+<suite name="suites">
 	<listeners>
 		<listener class-name="com.report.CustomReport" />
 		<listener class-name="com.report.ExtentReporterNG" />
 	</listeners>
-	<test name="Check_Connectivity_With_AddOn's" junit="false"
-		preserve-order="true">
+	<test name="Test">
 		<classes>
-			<class name="com.scripts.SingleTestInstance">
+			<class name="com.scripts.DataDrivenForEthernet">
 				<methods>
-					<include name="test_02_check_Connectivity_and_price_of_sites_with_dataModel" />
+					<include
+						name="test_03_check_Connectivity_And_Price_Of_sites_On_Basis_Of_UI_Segment" />
 				</methods>
 			</class>
-
 		</classes>
-	</test>
-</suite>
+	</test> <!-- Test -->
+</suite> <!-- Suite -->

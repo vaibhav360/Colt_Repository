@@ -29,8 +29,25 @@ public class DataModelCPQ {
 	String segment = null;
 	String bandWidth = null;
 	String quoteName = null;
+	String spokeBandwidth = null;
+	String siteABuildingType=null;
+	String siteBBuildingType=null;
 	
-	
+	public String getSiteABuildingType() {
+		return siteABuildingType;
+	}
+
+	public void setSiteABuildingType(String siteABuildingType) {
+		this.siteABuildingType = siteABuildingType;
+	}
+
+	public String getSiteBBuildingType() {
+		return siteBBuildingType;
+	}
+
+	public void setSiteBBuildingType(String siteBBuildingType) {
+		this.siteBBuildingType = siteBBuildingType;
+	}
 
 	public String getQuoteName() {
 		return quoteName;
@@ -246,6 +263,14 @@ public class DataModelCPQ {
 
 	public void setSync(String sync) {
 		this.sync = sync;
+	}
+	
+	public String getSpokeBandwidth() {
+		return spokeBandwidth;
+	}
+
+	public void setSpokeBandwidth(String spokeBandwidth) {
+		this.spokeBandwidth = spokeBandwidth;
 	}
 
 	@Override

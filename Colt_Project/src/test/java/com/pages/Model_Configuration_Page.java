@@ -1,12 +1,14 @@
 package com.pages;
 
-import org.openqa.selenium.By;
+import java.util.List;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
+import com.constants.GlobalConstant;
 import com.util.BasePage;
 import com.util.DataModelCPQ;
 import com.util.DriverTestCase.BuildingType;
@@ -158,13 +160,188 @@ public class Model_Configuration_Page extends BasePage {
 
 	@FindBy(id = "save")
 	public WebElement saveBtn;
-	
+
 	@FindBy(id = "carrierHotelCrossConnectAEnd_true")
 	public WebElement crossEnd_A;
-	
+
 	@FindBy(id = "carrierHotelCrossConnectBEnd_true")
 	public WebElement crossEnd_B;
-	
+
+	@FindBy(name = "coveragePage2")
+	public WebElement coverage;
+
+	@FindBy(xpath = "//*[@id='bandwidthSpoke-1']")
+	public WebElement bandwidthSpoke1;
+
+	@FindBy(xpath = "//*[@id='siteAddressSpoke-1']")
+	public WebElement siteAddressSpoke1;
+
+	@FindBy(xpath = "//*[text()='Add to Quote']")
+	public WebElement addtoquote;
+
+	@FindBy(xpath = "//*[text()='Quote']")
+	public WebElement gotoquote;
+
+	@FindBy(name = "nRCDiscountType_t")
+	public WebElement discount;
+
+	@FindBy(xpath = "//*[text()='Percentage Off']")
+	public WebElement percentageoff;
+
+	@FindBy(id = "discountNRCPerc_t")
+	public WebElement nrcdiscount;
+
+	@FindBy(id = "discountMRCPerc_t")
+	public WebElement mrcdiscount;
+
+	@FindBy(xpath = "//*[text()='Approval']")
+	public WebElement approval;
+
+	@FindBy(id = "save")
+	public WebElement save;
+
+	@FindBy(name = "submitForReviewCheckbox_t")
+	public WebElement submitcheckbox;
+
+	@FindBy(xpath = "(//a[text()='Submit'])[2]")
+	public WebElement submit;
+
+	@FindBy(xpath = "div#loading-dialog")
+	public WebElement loadingDailog;
+
+	@FindBy(css = ".messages.clearfix p")
+	public WebElement messageError;
+
+	@FindBy(xpath = "//*[text()='BlankPrices: ']")
+	public WebElement blankPriceMsg;
+
+	@FindBy(xpath = "(//span[@data-varname='discountMRC_l'])[1]")
+	public WebElement quoteDiscountMRC;
+
+	@FindBy(xpath = "(//span[@data-varname='discountNRC_l'])[1]")
+	public WebElement quoteDiscountNRC;
+
+	@FindBy(css = ".bm-approval-history ul li")
+	public WebElement approvalMsg;
+
+	@FindBy(xpath = "(//input[@name='spokeContractTerm1'])[1]")
+	public WebElement spokeContractTerm;
+
+	@FindBy(id = "siteTypeAEnd")
+	public WebElement buildingTypeA;
+
+	@FindBy(id = "siteTypeBEnd")
+	public WebElement buildingTypeB;
+
+	@FindBy(xpath = "//*[text()='B end address is mandatory']")
+	public WebElement errorAddressB;
+
+	@FindBy(xpath = "//*[text()='A end address is mandatory']")
+	public WebElement errorAddressA;
+
+	public void enterHubAndSpokeAddress(DataModelCPQ cpqModel) {
+		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.resiliency, cpqModel.getResiliency());
+		reportLog("Select Resiliency: " + cpqModel.getResiliency());
+
+		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.serviceBandwidth, cpqModel.getBandWidth());
+		reportLog("Select BandWidth: " + cpqModel.getBandWidth());
+
+		sendKeys(modelConfigurationPage.siteAddressAEnd, cpqModel.getSite_A_Add());
+		_waitForJStoLoad();
+		pressDownArrowKey();
+		pressEnterKey();
+		reportLog("Enter Site A address: " + cpqModel.getSite_A_Add());
+		_waitForJStoLoad();
+
+		modelConfigurationPage.spokeRequired_true.click();
+		reportLog("Click on Spoke Required");
+		_waitForJStoLoad();
+
+		scrollDown("400");
+		selectDropDownByText(modelConfigurationPage.bandwidthSpoke, cpqModel.getSpokeBandwidth());
+		reportLog("Select Spoke Bandwidth: " + "1 Gbps");
+		_waitForJStoLoad();
+
+		sendKeys(modelConfigurationPage.siteAddressSpoke, cpqModel.getSite_A_Add());
+		_waitForJStoLoad();
+		pressDownArrowKey();
+		pressEnterKey();
+		reportLog("Enter Spoke Address: " + cpqModel.getSite_B_Add());
+		_waitForJStoLoad();
+	}
+
+	/**
+	 * This method is used for verifying the building types
+	 * 
+	 * @author himanshud
+	 * @param type
+	 */
+	public void verifyBuildingType(String type) {
+
+		String typeA = buildingTypeA.getAttribute("value");
+		String typeB = buildingTypeB.getAttribute("value");
+		type = type.replace("-", "_");
+		BuildingType choice = BuildingType.valueOf(type);
+		switch (choice) {
+		case RB_RB:
+			softAssert.assertTrue(typeA.equals(GlobalConstant.BUILDING_RETAIL), "Site A is not Retail Building");
+			softAssert.assertTrue(typeB.equals(GlobalConstant.BUILDING_RETAIL), "Site B is not Retail Building");
+			break;
+		case RB_DC_K:
+			softAssert.assertTrue(typeA.equals(GlobalConstant.BUILDING_RETAIL), "Site A is not Retail Building");
+			softAssert.assertTrue(typeB.equals(GlobalConstant.BUILDING_KEY), "Site B is not DC Key Building");
+			break;
+		case RB_DC_S:
+			softAssert.assertTrue(typeA.equals(GlobalConstant.BUILDING_RETAIL), "Site A is not Retail Building");
+			softAssert.assertTrue(typeB.equals(GlobalConstant.BUILDING_STANDARD), "Site B is not DC Standard Building");
+			break;
+		case DC_K_DC_K:
+			softAssert.assertTrue(typeA.equals(GlobalConstant.BUILDING_KEY), "Site A is not DC Key Building");
+			softAssert.assertTrue(typeB.equals(GlobalConstant.BUILDING_KEY), "Site B is not DC Key Building");
+			break;
+		case DC_S_DC_S:
+			softAssert.assertTrue(typeA.equals(GlobalConstant.BUILDING_STANDARD), "Site A is not DC Standard Building");
+			softAssert.assertTrue(typeB.equals(GlobalConstant.BUILDING_STANDARD), "Site B is not DC Standard Building");
+			break;
+		case DC_S_DC_K:
+			softAssert.assertTrue(typeA.equals(GlobalConstant.BUILDING_STANDARD), "Site A is not DC Standard Building");
+			softAssert.assertTrue(typeB.equals(GlobalConstant.BUILDING_KEY), "Site B is not DC Key Building");
+			break;
+		default:
+			softAssert.fail("Please specify the correct type of Building");
+		}
+
+	}
+
+	public String getBuildingTypeForSiteA() {
+		String tmp = buildingTypeA.getAttribute("value");
+		if (tmp.equals("DC- Standard"))
+			return BuildingType.DC_S.toString();
+		if (tmp.equals("Retail Building"))
+			return BuildingType.RB.toString();
+		if (tmp.equals("DC- Key"))
+			return BuildingType.DC_C.toString();
+		return tmp;
+	}
+
+	public String getBuildingTypeForSiteB() {
+		return buildingTypeB.getAttribute("value");
+	}
+
+	public void verifyBlankPricesMessage() {
+		boolean flag = isElementDisplayed(blankPriceMsg);
+		boolean _flag = isElementDisplayed(messageError);
+		if (flag) {
+			String msg = blankPriceMsg.getText();
+			Assert.fail("Error Message displays: " + msg);
+		}
+		if (_flag) {
+			String msg = messageError.getText();
+			System.out.println(msg);
+			Assert.fail("Error Message displays: " + msg);
+		}
+		reportLog("Prices are available");
+	}
 
 	public void enterBuildingNumberManually(WebElement locator) {
 		String[] data;
@@ -203,20 +380,45 @@ public class Model_Configuration_Page extends BasePage {
 		reportLog("Click on to Update button");
 	}
 
+	public void enterAddresses(String siteA, String siteB) {
+		sendKeys(siteAddressAEnd, siteA);
+		_waitForJStoLoad();
+		pressDownArrowKey();
+		pressEnterKey();
+		reportLog("Enter Site A address: " + siteA);
+		_waitForJStoLoad();
+
+		sendKeys(siteAddressBEnd, siteB);
+		_waitForJStoLoad();
+		pressDownArrowKey();
+		pressEnterKey();
+		reportLog("Enter Site B address: " + siteB);
+		_waitForJStoLoad();
+	}
+
+	public void selectBandwidthAndResiliencyInEthernet(String band, String res) {
+		selectDropDownByText(resiliency, res);
+		reportLog("Select Resiliency: " + res);
+
+		selectDropDownByText(serviceBandwidth, band);
+		reportLog("Select BandWidth: " + band);
+	}
+
 	public void verifyConnectivity() {
 		boolean flag = isElementDisplayed(connectivityMsgA);
 		String siteA = null;
 		String siteB = null;
 		if (flag) {
 			siteA = connectivityMsgA.getText();
-			Assert.fail("Site A address have connection issue. Getting Msg: "+siteA);
+			Assert.fail("Site A address have connection issue. Getting Msg: " + siteA);
 		}
 		flag = isElementDisplayed(connectivityMsgB);
 		if (flag) {
+			javascriptScrollIntoView(connectivityMsgB);
 			siteB = connectivityMsgB.getText();
-			Assert.fail("Site A address have connection issue. Getting Msg: "+siteB);
+			Assert.fail("Site A address have connection issue. Getting Msg: " + siteB);
 		}
-
+		reportLog("Connectivity is available for both the addresses");
 	}
 
 	public String getConnectivityMessageForAddress(String site) {
@@ -244,7 +446,7 @@ public class Model_Configuration_Page extends BasePage {
 		}
 		return msg;
 	}
-	
+
 	public void selectAddOns(DataModelCPQ model) throws InterruptedException {
 
 		javascriptButtonClick(addOnTab);
@@ -306,22 +508,192 @@ public class Model_Configuration_Page extends BasePage {
 		reportLog("Select fastTrack add on");
 
 	}
-	
+
 	public void clickParticularAddOn(WebElement locator, String data) throws InterruptedException {
 
 		if (!(data == null || data.equals("No"))) {
-			javascriptScrollIntoView(locator); 
+			javascriptScrollIntoView(locator);
 			waitAndClick(locator);
 			_waitForJStoLoad();
 		}
 	}
-	
-	public void enterContractTerm(String term)  {
-		
-		term= term.indexOf(".") < 0 ? term : term.replaceAll("0*$", "").replaceAll("\\.$", "");
-		javascriptSendKeys(contractTerm,term);
+
+	public String enterContractTerm(String product, String term) {
+
+		term = term.indexOf(".") < 0 ? term : term.replaceAll("0*$", "").replaceAll("\\.$", "");
+		if (product.equals("Ethernet")) {
+			javascriptSendKeys(contractTerm, term);
+		}
+		if (product.equals("Hub")) {
+			sendKeys(spokeContractTerm, term);
+		}
+		// _waitForJStoLoad();
+		reportLog("Contract Term for " + product + ": " + term);
+		return term;
+	}
+
+	public String getUICoverage() {
+		String value = coverage.getAttribute("Value");
+		return value;
+	}
+
+	public void addDetailsfromEthernetLineTositedetails() throws InterruptedException {
+
+		selectDropDownByText(resiliency, "Protected");
+		reportLog("Select Resiliency: Protected ");
+
+		selectDropDownByText(serviceBandwidth, "100 Gbps");
+		reportLog("Select BandWidth: 100 Gbps");
 		_waitForJStoLoad();
-		reportLog("Contract Term: " + term);
+
+		// Enter End A site Address
+		sendKeys(siteAddressAEnd, "72, Adersstraße, Düsseldorf, Germany, 40215");
+		_waitForJStoLoad();
+		pressDownArrowKey();
+		pressEnterKey();
+		reportLog("Enter Site A address: 91, Vogelsanger Weg, Düsseldorf, Germany, 40470");
+
+		// Enter End B site Address
+		sendKeys(siteAddressBEnd, "Humboldtstraße 4, Düsseldorf, Germany, 40237");
+		_waitForJStoLoad();
+		pressDownArrowKey();
+		pressEnterKey();
+		reportLog("Enter Site A address: 91, Vogelsanger Weg, Düsseldorf, Germany, 40470");
+		_waitForJStoLoad();
+
+		update.click();
+		reportLog("Click on to Update button");
+		_waitForJStoLoad();
+
+		// Click on Check Connectivity Button
+		checkConnectivityButton.click();
+		reportLog("Click on to CheckConnectivity button");
+		_waitForJStoLoad();
+
+		verifyConnectivity();
+		verifyBlankPricesMessage();
+
+		addOnTab.click();
+		reportLog("Select Internal Cabelling Site_A add on");
+		_waitForJStoLoad();
+		outsideBHI_Site_A.click();
+		reportLog("Select OutSide Business Hour Installation Site A");
+
+		outsideBHI_Site_B.click();
+		reportLog("Select OutSide Business Hour Installation Site B");
+
+		// dual_Entry_Site_A.click();
+		reportLog("Select dual entry for Site A");
+
+		// dual_Entry_Site_B.click();
+		reportLog("Select dual entry for Site B");
+
+		ic_Site_B.click();
+		reportLog("Select Internal Cabelling Site_B add on");
+
+		ic_Site_A.click();
+		reportLog("Select Internal Cabelling Site_A add on");
+
+		lag_Site_A.click();
+		reportLog("Select LAG Site A");
+
+		lag_Site_B.click();
+		reportLog("Select LAG Site B");
+
+		diversity.click();
+		reportLog("Select Diversity");
+
+		cos.click();
+		reportLog("Select Class of Service add on");
+
+		pr.click();
+		reportLog("Select Performance Reporting add on");
+
+		pam.click();
+		reportLog("Select Pro Active Management add on");
+
+		javascriptScrollIntoView(fastTrack);
+		fastTrack.click();
+		reportLog("Select Fast Track ");
+
+		javascriptButtonClick(addtoquote);
+		reportLog("Click on Add to Quote button");
+		_waitForJStoLoad();
+
+	}
+
+	public void AddDetailsHubSpokeTositedetails() {
+
+		selectDropDownByText(resiliency, "Protected");
+		reportLog("Select Resiliency: Protected");
+
+		selectDropDownByText(serviceBandwidth, "10 Gbps");
+		reportLog("Select BandWidth: 100 Gbps");
+
+		sendKeys(siteAddressAEnd, "Julius-Tandler-Platz 3 1090 Vienna, Austria");
+		sleepExecution(2);
+		pressDownArrowKey();
+		pressEnterKey();
+		reportLog("Enter Site A address: Julius-Tandler-Platz 3 1090 Vienna, Austria");
+		_waitForJStoLoad();
+
+		spokeRequired_true.click();
+		reportLog("Click on Spoke Required");
+		_waitForJStoLoad();
+
+		scrollDown("400");
+		javascriptSendKeys(numberOfSpokes, "2");
+		pressEnterKey();
+		_waitForJStoLoad();
+
+		selectDropDownByText(bandwidthSpoke, "1 Gbps");
+		reportLog("Select Spoke Bandwidth: 1 Gbps");
+		_waitForJStoLoad();
+
+		sendKeys(siteAddressSpoke, "Bahnsteggasse 27, Vienna, Austria");
+		sleepExecution(2);
+		pressDownArrowKey();
+		pressEnterKey();
+		reportLog("Enter Spoke One Address: 92, Uerdinger Straße, Düsseldorf, Germany, 40474");
+		_waitForJStoLoad();
+		scrollDown("350");
+
+		Select dropdown1 = new Select(bandwidthSpoke1);
+		dropdown1.selectByVisibleText("1 Gbps");
+		_waitForJStoLoad();
+		// Enter spoke 1 Address
+		sendKeys(siteAddressSpoke1, "Kärntner Ring 12 1010 Vienna, Austria");
+		sleepExecution(3);
+		pressDownArrowKey();
+		pressEnterKey();
+		reportLog("Enter Spoke Two address: 92, Uerdinger Straße, Düsseldorf, Germany, 40474");
+		_waitForJStoLoad();
+
+		click(update);
+		reportLog("Click on to Update button");
+
+		click(checkConnectivityButton);
+		reportLog("Click on to CheckConnectivity button");
+		scrollDown("355");
+
+		verifyBlankPricesMessage();
+		click(addToTransaction);
+
+	}
+
+	public void verifyAddressError() {
+		boolean flag = isElementDisplayed(errorAddressA);
+		String siteA = null;
+		String siteB = null;
+		if (flag) {
+			siteA = errorAddressA.getText();
+			Assert.fail("Site A address have connection issue. Getting Msg: " + siteA);
+		}
+		flag = isElementDisplayed(errorAddressB);
+		if (flag) {
+			siteB = errorAddressB.getText();
+			Assert.fail("Site A address have connection issue. Getting Msg: " + siteB);
+		}
 	}
 
 }
