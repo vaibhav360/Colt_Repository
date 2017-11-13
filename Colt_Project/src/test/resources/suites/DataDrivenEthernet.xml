@@ -10,7 +10,7 @@
 			<class name="com.scripts.DataDrivenForEthernet">
 				<methods>
 					<include
-						name="test_03_check_Connectivity_And_Price_Of_sites_On_Basis_Of_UI_Segment" />
+						name="test_02_check_Connectivity_And_Price_Of_sites_On_Basis_Of_UI_Segment" />
 				</methods>
 			</class>
 		</classes>

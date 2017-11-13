@@ -37,6 +37,7 @@ public class RegressionFlow extends DriverTestCase {
 	public void test_01_Navigate_From_C4C_To_CPQ() {
 		getWebDriver().navigate().to(c4c_url);
 		reportLog("Navigating C4C Application URl: " + c4c_url);
+		reportLog("**************"+c4c_userName+c4cappPage);
 		c4cappPage._waitForJStoLoad();
 		c4cappPage.loginInToC4CApplication(c4c_userName, c4c_Password);
 		c4cappPage.verifyTitle("Home - SAP Hybris Cloud for Customer");

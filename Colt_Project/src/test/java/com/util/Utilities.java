@@ -7,6 +7,7 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
@@ -212,5 +213,12 @@ public class Utilities {
 
 		return finalMrc.toString();
 
+	}
+	
+	public static String getCurrentDateAndTime()
+	{
+		DateFormat dateFormat = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");
+		Date date = new Date();
+		return dateFormat.format(date);
 	}
 }

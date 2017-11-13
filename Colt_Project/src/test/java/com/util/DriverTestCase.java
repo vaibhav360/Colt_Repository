@@ -2,7 +2,6 @@ package com.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -11,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.automationtesting.excelreport.Xl;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -33,6 +33,8 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import com.codoid.products.fillo.Connection;
+import com.common.excelreport.ExcelReportGenerator;
+//import com.common.excelreport.ExcelReportGenerator;
 import com.constants.GlobalConstant.FileNames;
 import com.pages.C4CAppPage;
 import com.pages.OpportunitiesPage;
@@ -54,7 +56,7 @@ public abstract class DriverTestCase {
 	protected long timeout = 60;
 	public static OpportunitiesPage opportunityPage;
 	public static Connection listPriceConnection;
-	
+
 	// pages object initialization
 	protected static Commerce_Management_Page commerceManagementPage;
 	protected static Model_Configuration_Page modelConfigurationPage;
@@ -67,7 +69,8 @@ public abstract class DriverTestCase {
 	// Define objects
 	protected WebDriver driver;
 	// Initialize objects
-	protected PropertyReader configReader = new PropertyReader(FileNames.TestDataRelativePath.toString()+FileNames.CONFIG.toString());
+	protected PropertyReader configReader = new PropertyReader(
+			FileNames.TestDataRelativePath.toString() + FileNames.CONFIG.toString());
 	protected PropertyReader c4cpropertyReader = new PropertyReader(FileNames.C4C_TEST_DATA.toString());
 	protected PropertyReader cpqpropertyReader = new PropertyReader(FileNames.CPQ_TEST_DATA.toString());
 	// Define variables
@@ -90,19 +93,17 @@ public abstract class DriverTestCase {
 	}
 
 	public enum BuildingType {
-		RB_RB, RB_DC_K, RB_DC_S, DC_K_DC_K, DC_S_DC_S,DC_S_DC_K,
-		RB,DC_C,DC_S
+		RB_RB, RB_DC_K, RB_DC_S, DC_K_DC_K, DC_S_DC_S, DC_S_DC_K, RB, DC_C, DC_S
 	}
-	
+
 	public enum AddOns {
-		outsideBHI_Site_A, outsideBHI_Site_B, dual_Entry_Site_A, dual_Entry_Site_B, longLining_A,longLining_B,
-		ic_Site_A,ic_Site_B,lag_Site_A,lag_Site_B,diversity,cos,pr,pam,fastTrack,sync
+		outsideBHI_Site_A, outsideBHI_Site_B, dual_Entry_Site_A, dual_Entry_Site_B, longLining_A, longLining_B, ic_Site_A, ic_Site_B, lag_Site_A, lag_Site_B, diversity, cos, pr, pam, fastTrack, sync
 	}
-	
+
 	public enum CurrencyType {
 		EUR, GBP, USD, DKK, CHF, SEK
 	}
-	
+
 	public enum DiscountType {
 		PERCENTAGE, AMOUNT, TARGET
 	}
@@ -112,12 +113,13 @@ public abstract class DriverTestCase {
 		extent = new ExtentReports("target\\surefire-reports\\ExtentReport.html", true);
 	}
 
-	
-	//@BeforeMethod
+	// @BeforeMethod
 	public void setUp() {
-		/*test = extent.startTest(this.getClass().getSimpleName(), Method.class.getName());
-		test.assignAuthor("360Logica");
-		test.assignCategory(this.getClass().getSimpleName());*/
+		/*
+		 * test = extent.startTest(this.getClass().getSimpleName(),
+		 * Method.class.getName()); test.assignAuthor("360Logica");
+		 * test.assignCategory(this.getClass().getSimpleName());
+		 */
 		String driverType = configReader.readApplicationFile("BROWSER");
 
 		if (DriverType.Firefox.toString().equals(driverType)) {
@@ -163,7 +165,6 @@ public abstract class DriverTestCase {
 		transactionPage = PageFactory.initElements(getWebDriver(), Transaction_Page.class);
 		commerceManagementPage = PageFactory.initElements(getWebDriver(), Commerce_Management_Page.class);
 		c4cappPage = PageFactory.initElements(getWebDriver(), C4CAppPage.class);
-		
 
 	}
 
@@ -191,17 +192,16 @@ public abstract class DriverTestCase {
 		}
 	}
 
-	@BeforeMethod	
-	public void startTest(Method method)
-	{
+	@BeforeMethod
+	public void startTest(Method method) {
 		test = extent.startTest(method.getName());
 		test.assignAuthor("360Logica");
 		test.assignCategory(this.getClass().getCanonicalName());
 		System.out.println(method.getName());
 		System.out.println(test.getDescription());
-		
+
 	}
-	
+
 	@AfterMethod
 	public void afterMethod(ITestResult result) throws IOException, InterruptedException {
 
@@ -211,7 +211,7 @@ public abstract class DriverTestCase {
 		extent.endTest(test);
 		System.out.println("****************************************");
 	}
-	
+
 	public WebDriver getWebDriver() {
 		return this.driver;
 	}
@@ -227,10 +227,27 @@ public abstract class DriverTestCase {
 
 	@AfterSuite
 	public void tearDownSuite() {
-		//reporter.endReport();
-		//getWebDriver().quit();
+		// reporter.endReport();
+		getWebDriver().quit();
 		extent.flush();
 		extent.close();
+		try {
+			reportLog("Before excel report-" + Utilities.getCurrentDateAndTime().toString());
+			Xl.generateReport("D:\\Colt_Data\\Reports\\ExcelReports",
+					"excel-report_" + Utilities.getCurrentDateAndTime() + ".xlsx");
+
+			Xl.generateReport("excel-report_" + Utilities.getCurrentDateAndTime() + ".xlsx");
+			/*
+			 * ExcelReportGenerator.generateExcelReport(Utilities.getRandomInteger(1, 100) +
+			 * "_CustomExcelReport.xls", "D:\\Colt_Data\\Reports\\ExcelReports");
+			 */
+			reportLog("*************Excel Report Code executed**************");
+
+		} catch (Exception e) {
+			reportLog("Exception is coming");
+			reportLog(e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	/* Report logs */
