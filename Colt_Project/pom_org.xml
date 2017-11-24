@@ -4,7 +4,6 @@
 	<groupId>colt</groupId>
 	<artifactId>colt_project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/jaxen/jaxen -->
 		<dependency>
@@ -16,7 +15,7 @@
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<version>6.8</version>
+			<version>6.9.10</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -122,35 +121,7 @@
 			<artifactId>fillo</artifactId>
 			<version>1.15</version>
 		</dependency>
-		<dependency>
-			<groupId>com.ATExcelReportgroup</groupId>
-			<artifactId>ATExcelReport</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jfreechartgroup</groupId>
-			<artifactId>jfreechart</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jfreechart-dependency-jcommongroup</groupId>
-			<artifactId>jfreechart-dependency</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ExcelReportGeneratorgroup</groupId>
-			<artifactId>ExcelReportGenerator</artifactId>
-			<version>1.0</version>
-		</dependency>
 	</dependencies>
-
-	<repositories>
-		<repository>
-			<id>project.local</id>
-			<name>project</name>
-			<url>file:${project.basedir}/lib</url>
-		</repository>
-	</repositories>
 
 	<build>
 		<plugins>
@@ -158,28 +129,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.20.1</version>
-				<!-- <dependencies> <dependency> <groupId>org.apache.maven.surefire</groupId> 
-					<artifactId>surefire-testng</artifactId> <version>2.20.1</version> </dependency> 
-					</dependencies> -->
-
+				<version>2.20</version>
 				<!-- <executions> <execution> <phase>integration-test</phase> <goals> 
 					<goal>test</goal> </goals> -->
 				<configuration>
-					<inherited>true</inherited>
-					<executions>
-						<execution>
-							<phase>test</phase>
-							<goals>
-								<goal>test</goal>
-							</goals>
-						</execution>
-					</executions>
 					<testFailureIgnore>true</testFailureIgnore>
 					<suiteXmlFiles>
-						<!-- <file>src/test/resources/suites/RegressionSuite.xml</file> -->
-						<!-- <file>${test}</file> -->
-						<suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
+						<file>src/test/resources/suites/RegressionSuite.xml</file>
 					</suiteXmlFiles>
 					<properties>
 						<property>
@@ -201,6 +157,7 @@
 						</property>
 					</properties>
 				</configuration>
+
 			</plugin>
 		</plugins>
 	</build>

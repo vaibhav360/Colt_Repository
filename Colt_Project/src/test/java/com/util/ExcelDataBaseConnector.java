@@ -59,6 +59,8 @@ public class ExcelDataBaseConnector {
 				+ model.getResiliency() + "'" + "AND Pricing_Segment ='" + model.getSegment() + "' AND Building_Type='"
 				+ model.getBuilding_Type() + "'";
 		
+		
+		
 		System.out.println(strQuery);
 
 		try {

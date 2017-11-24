@@ -1,5 +1,8 @@
 package com.util;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import org.openqa.selenium.By;
@@ -522,4 +525,27 @@ public abstract class BasePage extends DriverTestCase {
 		reportLog("Log out from the application");
 	}
 
+	public String removeDecimalValues(String data) {
+
+		data = data.indexOf(".") < 0 ? data : data.replaceAll("0*$", "").replaceAll("\\.$", "");
+		return data;
+	}
+	
+	//*[@id="chargesServiceLevel"]/table/tbody/tr[2]/td[3]
+	public void copydata(WebElement locator) throws IOException
+	{
+	 
+		String text = driver.findElement((By) locator).getText().toString();
+		//String text1 = driver.findElement((By) locator1).getText();
+		FileWriter fr=new FileWriter("C:/Users/himanshud/Desktopcoltpad.txt");
+		BufferedWriter br=new BufferedWriter(fr);
+
+		br.write(text);
+		//br.write(text1);
+		br.newLine();
+		br.close();
+		
+	}
+	
+	
 }
