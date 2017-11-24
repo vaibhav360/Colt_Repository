@@ -44,6 +44,9 @@ public class Commerce_Management_Page extends BasePage {
 		return By.xpath("//div[@class='tabular-data-container']//table//tr[" + i + "]//td[8]//span");
 	}
 
+	@FindBy(xpath = "(//*[text()='Select'])[2]")
+	public WebElement selectButton;
+	
 	public void clickOnAddTransactionButton() {
 		waitAndClick(newTransactionButton);
 		_waitForJStoLoad();

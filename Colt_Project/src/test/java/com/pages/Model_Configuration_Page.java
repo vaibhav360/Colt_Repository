@@ -1,10 +1,20 @@
 package com.pages;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindAll;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.FindBys;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
@@ -20,16 +30,16 @@ public class Model_Configuration_Page extends BasePage {
 		// PageFactory.initElements(driver, Model_Configuration_Page.class);
 	}
 
-	@FindBy(id = "serviceBandwidth")
+	@FindBy(name = "serviceBandwidth")
 	public WebElement serviceBandwidth;
 
 	@FindBy(id = "resiliency")
 	public WebElement resiliency;
 
-	@FindBy(id = "siteAddressAEnd")
+	@FindAll({ @FindBy(id = "siteAddressAEnd"), @FindBy(name = "siteAddressAEnd") })
 	public WebElement siteAddressAEnd;
 
-	@FindBy(id = "siteAddressBEnd")
+	@FindAll({ @FindBy(id = "siteAddressBEnd"), @FindBy(name = "siteAddressBEnd") })
 	public WebElement siteAddressBEnd;
 
 	@FindBy(xpath = "//*[@id='manuallyEnterAEndAddress']/span")
@@ -238,6 +248,85 @@ public class Model_Configuration_Page extends BasePage {
 
 	@FindBy(xpath = "//*[text()='A end address is mandatory']")
 	public WebElement errorAddressA;
+
+	@FindBy(name = "premiseNumberAEnd")
+	public WebElement premiseNumberAEnd;
+
+	@FindBy(name = "premiseNumberBEnd")
+	public WebElement premiseNumberBEnd;
+
+	@FindBy(name = "streetNameAEnd")
+	public WebElement streetNameAEnd;
+
+	@FindBy(name = "streetNameBEnd")
+	public WebElement streetNameBEnd;
+
+	@FindBy(name = "cityAEnd")
+	public WebElement cityAEnd;
+
+	@FindBy(name = "cityBEnd")
+	public WebElement cityBEnd;
+
+	@FindBy(name = "countryAEnd")
+	public WebElement countryAEnd;
+	
+	@FindBy(name = "countryBEnd")
+	public WebElement countryBEnd;
+
+	@FindBy(name = "postCodeAEnd")
+	public WebElement postCodeAEnd;
+
+	@FindBy(name = "postCodeBEnd")
+	public WebElement postCodeBEnd;
+
+	@FindBy(name = "premises_master_id_a_end")
+	public WebElement premises_master_id_a_end;
+
+	@FindBy(name = "premises_master_id_b_end")
+	public WebElement premises_master_id_b_end;
+
+	@FindBy(name = "selectedConnectivityOptionsRowAEnd_hidden")
+	public WebElement selectedConnectivityOptionsRowAEnd;
+
+	@FindBy(name = "selectedConnectivityOptionsRowBEnd_hidden")
+	public WebElement selectedConnectivityOptionsRowBEnd;
+
+	@FindBy(name = "siteTypeAEnd")
+	public WebElement siteTypeAEnd;
+
+	@FindBy(name = "siteTypeBEnd ")
+	public WebElement siteTypeBEnd;
+	
+	@FindBy(xpath = "//*[@id=\"chargesServiceLevel\"]/table/tbody/tr[2]/td[2]")
+	public WebElement copyaddress;
+	
+	
+	@FindBy(name = "resiliency") 
+	public WebElement resilencyjavascript;
+	
+	
+	@FindBy(name = "pricingSegment")
+	public WebElement pricingSegment;
+	
+	
+	@FindBy(xpath = "//div[@id='chargesServiceLevel']/table//tr[2]/td[2]") 
+	public WebElement nrcPrice;
+	
+	
+	@FindBy(xpath = "//div[@id='chargesServiceLevel']/table//tr[2]/td[3]")
+	public WebElement mrcPrice;
+	
+	
+	@FindBy(name = "contractTermInMonths")
+	public WebElement contractTermInMonths;
+	
+	
+	@FindBy(name = "currency")
+	public WebElement currency;
+	
+	
+	
+	//div[@id='chargesServiceLevel']/table//tr[2]/td[3]
 
 	public void enterHubAndSpokeAddress(DataModelCPQ cpqModel) {
 		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.resiliency, cpqModel.getResiliency());
@@ -695,5 +784,77 @@ public class Model_Configuration_Page extends BasePage {
 			Assert.fail("Site A address have connection issue. Getting Msg: " + siteB);
 		}
 	}
+
+	public void enterSiteADetailByJavascript(DataModelCPQ model) {
+		String str = "0##Colt LANLink Point to Point (Ethernet Point to Point)"
+				+ "**On-Net**Colt**I0042**SESTO-0000076039**Colt Fibre**3rd Party Leased Fibre"
+				+ "**NO****NO**NO**ACTIVE**";
+		javascriptSendKeys(siteAddressAEnd, model.getSite_A_Add());
+		javascriptSendKeys(countryAEnd, model.getCountry());
+		javascriptSendKeys(cityAEnd, model.getCityName());
+		javascriptSendKeys(postCodeAEnd,removeDecimalValues(model.getPostCode()));
+		javascriptSendKeys(premiseNumberAEnd, removeDecimalValues(model.getBuildingNumber()));
+		javascriptSendKeys(premises_master_id_a_end, removeDecimalValues(model.getMasterId()));
+		javascriptSendKeys(selectedConnectivityOptionsRowAEnd, str);
+		javascriptSendKeys(streetNameAEnd, model.getStreetName());
+		javascriptSendKeys(buildingTypeA, model.getBuilding_Type());
+		
+
+	}
+	
+	public void enterSiteBDetailByJavascript(DataModelCPQ model) {
+		String str = "0##Colt LANLink Point to Point (Ethernet Point to Point)"
+				+ "**On-Net**Colt**I0042**SESTO-0000076039**Colt Fibre**3rd Party Leased Fibre"
+				+ "**NO****NO**NO**ACTIVE**";
+		javascriptSendKeys(siteAddressBEnd, model.getSite_B_Add());
+		javascriptSendKeys(countryBEnd, model.getCountry2());
+		javascriptSendKeys(cityBEnd, model.getCityName2());
+		javascriptSendKeys(postCodeBEnd, removeDecimalValues(model.getPostCode2()));
+		javascriptSendKeys(premiseNumberBEnd, removeDecimalValues(model.getBuildingNumber2()));
+		javascriptSendKeys(premises_master_id_b_end, removeDecimalValues(model.getMasterId2()));
+		javascriptSendKeys(selectedConnectivityOptionsRowAEnd, str);
+		javascriptSendKeys(streetNameBEnd, model.getStreetName2());
+		javascriptSendKeys(buildingTypeB, model.getBuilding_Type2());
+		javascriptSendKeys(serviceBandwidth, model.getBandWidth());
+		javascriptSendKeys(resilencyjavascript, model.getResiliency());
+		javascriptSendKeys(pricingSegment, model.getSegment());
+		javascriptSendKeys(currency, model.getCurrency());
+		javascriptSendKeys(contractTermInMonths, removeDecimalValues(model.getContract_Term()));
+
+	}
+	
+	public void enterWriteProductPrices() throws IOException
+	{
+		String text = nrcPrice.getText();
+		System.out.println("NRC Price :: " + text);
+		
+		String text1 = mrcPrice.getText();
+		System.out.println("MRC Price:: "+ text1);		
+		
+		PrintWriter out = null;
+	    BufferedWriter bufWriter;
+
+	    try{
+	        bufWriter =
+	            Files.newBufferedWriter(
+	                Paths.get("C:/Users/himanshud/Desktop/coltpad.txt"),
+	                Charset.forName("UTF8"),	                             
+	                StandardOpenOption.APPEND);	              
+	        out = new PrintWriter(bufWriter, true);
+	    }catch(IOException e){
+	        
+	    }
+	    
+	    //After successful creation of PrintWriter
+	    out.println("NRC Price : "+  text + "  "+ "MRC Price : " + text1 );
+	    
+	    //After done writing, remember to close!
+	    out.close();
+		
+		
+	
+		
+	}
+	
 
 }

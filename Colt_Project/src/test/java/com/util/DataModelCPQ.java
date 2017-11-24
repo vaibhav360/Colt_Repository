@@ -20,6 +20,7 @@ public class DataModelCPQ {
 	String sync = null;
 	String customer = null;
 	String country = null;
+	String country2 = null;
 	String contract_Term = null;
 	String site_A_Add = null;
 	String site_B_Add = null;
@@ -30,9 +31,152 @@ public class DataModelCPQ {
 	String bandWidth = null;
 	String quoteName = null;
 	String spokeBandwidth = null;
-	String siteABuildingType=null;
-	String siteBBuildingType=null;
-	
+	String siteABuildingType = null;
+	String siteBBuildingType = null;
+	String cityName = null;
+	String masterId = null;
+	String pricingCity = null;
+	String pricingCity2 = null;
+	String cityName2 = null;
+	String masterId2 = null;
+	String building_Type2 = null;
+	String postCode = null;
+	String postCode2 = null;
+	String streetName = null;
+	String streetName2 = null;
+	String buildingNumber = null;
+	String buildingNumber2 = null;
+	String currency = null ;
+	//String servicebandwidth = null;
+/*
+	public String getServicebandwidth() {
+		return servicebandwidth;
+	}
+
+	public void setServicebandwidth(String servicebandwidth) {
+		this.servicebandwidth = servicebandwidth;
+	}*/
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public String getPricingCity2() {
+		return pricingCity2;
+	}
+
+	public void setPricingCity2(String pricingCity2) {
+		this.pricingCity2 = pricingCity2;
+	}
+
+	public String getCountry2() {
+		return country2;
+	}
+
+	public void setCountry2(String country2) {
+		this.country2 = country2;
+	}
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+
+	public String getMasterId() {
+		return masterId;
+	}
+
+	public void setMasterId(String masterId) {
+		this.masterId = masterId;
+	}
+
+	public String getPricingCity() {
+		return pricingCity;
+	}
+
+	public void setPricingCity(String pricingCity) {
+		this.pricingCity = pricingCity;
+	}
+
+	public String getCityName2() {
+		return cityName2;
+	}
+
+	public void setCityName2(String cityName2) {
+		this.cityName2 = cityName2;
+	}
+
+	public String getMasterId2() {
+		return masterId2;
+	}
+
+	public void setMasterId2(String masterId2) {
+		this.masterId2 = masterId2;
+	}
+
+	public String getBuilding_Type2() {
+		return building_Type2;
+	}
+
+	public void setBuilding_Type2(String building_Type2) {
+		this.building_Type2 = building_Type2;
+	}
+
+	public String getPostCode() {
+		return postCode;
+	}
+
+	public void setPostCode(String postCode) {
+		this.postCode = postCode;
+	}
+
+	public String getPostCode2() {
+		return postCode2;
+	}
+
+	public void setPostCode2(String postCode2) {
+		this.postCode2 = postCode2;
+	}
+
+	public String getStreetName() {
+		return streetName;
+	}
+
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
+	}
+
+	public String getStreetName2() {
+		return streetName2;
+	}
+
+	public void setStreetName2(String streetName2) {
+		this.streetName2 = streetName2;
+	}
+
+	public String getBuildingNumber() {
+		return buildingNumber;
+	}
+
+	public void setBuildingNumber(String buildingNumber) {
+		this.buildingNumber = buildingNumber;
+	}
+
+	public String getBuildingNumber2() {
+		return buildingNumber2;
+	}
+
+	public void setBuildingNumber2(String buildingNumber2) {
+		this.buildingNumber2 = buildingNumber2;
+	}
+
 	public String getSiteABuildingType() {
 		return siteABuildingType;
 	}
@@ -264,7 +408,7 @@ public class DataModelCPQ {
 	public void setSync(String sync) {
 		this.sync = sync;
 	}
-	
+
 	public String getSpokeBandwidth() {
 		return spokeBandwidth;
 	}
@@ -285,7 +429,5 @@ public class DataModelCPQ {
 				+ ", building_Type=" + building_Type + ", resiliency=" + resiliency + ", segment=" + segment
 				+ ", bandWidth=" + bandWidth + ", quoteName=" + quoteName + "]";
 	}
-	
-	
 
 }

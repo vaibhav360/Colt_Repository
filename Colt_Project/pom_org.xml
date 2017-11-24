@@ -135,7 +135,7 @@
 				<configuration>
 					<testFailureIgnore>true</testFailureIgnore>
 					<suiteXmlFiles>
-						<file>src/test/resources/suites/DataValidationSuite.xml</file>
+						<file>src/test/resources/suites/RegressionSuite.xml</file>
 					</suiteXmlFiles>
 					<properties>
 						<property>

@@ -87,6 +87,7 @@ public abstract class DriverTestCase {
 	protected String salesapprover_password = configReader.readApplicationFile("SalesApproverPassword");
 	protected String financeapprover_user = configReader.readApplicationFile("FinanaceApproverUser");
 	protected String financeapprover_password = configReader.readApplicationFile("FinanaceApproverPassword");
+	protected String cpq_url = configReader.readApplicationFile("ApplicationURL");
 
 	enum DriverType {
 		Firefox, IE, Chrome
@@ -154,7 +155,7 @@ public abstract class DriverTestCase {
 		}
 
 		// Maximize window
-		driver.manage().window().maximize();
+		//driver.manage().window().maximize();
 
 		// Delete cookies
 		driver.manage().deleteAllCookies();
@@ -228,7 +229,7 @@ public abstract class DriverTestCase {
 	@AfterSuite
 	public void tearDownSuite() {
 		// reporter.endReport();
-		getWebDriver().quit();
+		//getWebDriver().quit();
 		extent.flush();
 		extent.close();
 		try {
