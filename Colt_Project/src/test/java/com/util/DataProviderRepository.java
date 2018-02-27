@@ -77,7 +77,7 @@ public class DataProviderRepository {
 		
 		Collection<Object[]> modelData = new ArrayList<Object[]>() {
 			{
-				ExcelReader ex = new ExcelReader("TestData_WithContractTerm.xlsx", "sheet5");
+				ExcelReader ex = new ExcelReader("TestData_WithContractTermHub.xlsx", "sheet1");
 				for (int i = 0; i < ex.getRowCount(); i++) {
 					DataModelCPQ cpqModel = new DataModelCPQ();
 					cpqModel.setQuoteName(ex.readExcel(i + 1, 0));

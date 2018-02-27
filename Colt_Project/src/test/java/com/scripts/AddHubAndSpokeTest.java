@@ -1,5 +1,7 @@
 package com.scripts;
 
+import java.io.FileNotFoundException;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -13,7 +15,7 @@ import com.util.Utilities;
 public class AddHubAndSpokeTest extends DriverTestCase {
 
 	@BeforeClass
-	public void doLogin() throws InterruptedException {
+	public void doLogin() throws InterruptedException, FileNotFoundException {
 		setUp();
 		/*String username = configReader.readApplicationFile("Username");
 		String password = configReader.readApplicationFile("Password");
@@ -30,11 +32,11 @@ public class AddHubAndSpokeTest extends DriverTestCase {
 		reportLog("Navigating C4C Application URl: " + c4c_url);
 		c4cappPage._waitForJStoLoad();
 		c4cappPage.loginInToC4CApplication(c4c_userName, c4c_Password);
-		c4cappPage.verifyTitle("Home - SAP Hybris Cloud for Customer");
+		c4cappPage.verifyTitle("SAP Hybris Cloud for Customer");
 		c4cappPage.goToOpportunityPage();
 		
-		opportunityPage.searchOpportunity("259724");		
-		opportunityPage.selectParticularOpportunity(259724);		
+		opportunityPage.searchOpportunity("260396");		
+		opportunityPage.selectParticularOpportunity(260396);		
 		opportunityPage.addNewQuoteFromOpportunity();
 		
 		opportunityPage.switchWindow("Transaction");
@@ -46,7 +48,7 @@ public class AddHubAndSpokeTest extends DriverTestCase {
 
 		String Description = "Quote_Desc_" + Utilities.getRandomInteger(1, 9999);
 		DataModelCPQ cpqModel = (DataModelCPQ) obj;
-
+/*
 		productListPage.clickOnOrderManagerLink();
 
 		c4cappPage.verifyTitle("Commerce Management");
@@ -56,7 +58,7 @@ public class AddHubAndSpokeTest extends DriverTestCase {
 		reportLog("Click on to NewTransaction link");
 
 		c4cappPage.verifyTitle("Transaction");
-		reportLog("Verifying the title 'Transaction'");
+		reportLog("Verifying the title 'Transaction'");*/
 
 		transactionPage.sendKeys(transactionPage.quoteName, cpqModel.getQuoteName());
 		reportLog("Type QuoteName: " + cpqModel.getQuoteName());
@@ -73,7 +75,7 @@ public class AddHubAndSpokeTest extends DriverTestCase {
 		c4cappPage.verifyTitle("Model Configuration");
 		reportLog("Verifying the title 'Model Configuration'");
 
-		modelConfigurationPage.enterHubAndSpokeAddress(cpqModel);
+		modelConfigurationPage.enterHubAddress(cpqModel);
 
 		modelConfigurationPage.click(modelConfigurationPage.update);
 		reportLog("Click on to Update button");
@@ -85,7 +87,7 @@ public class AddHubAndSpokeTest extends DriverTestCase {
 		
 		//modelConfigurationPage.verifyBlankPricesMessage();
 
-		cpqModel.setSiteABuildingType(modelConfigurationPage.getBuildingTypeForSiteA());
+		/*cpqModel.setSiteABuildingType(modelConfigurationPage.getBuildingTypeForSiteA());
 		// ========================================DB Operations ================================
 		String query = ExcelDataBaseConnector.getSQLQuery("Hub", cpqModel);
 		String mrc_Net_Price_Hub = ExcelDataBaseConnector.executeSQLQuery(listPriceConnection, query, "Zone 1 MRC");
@@ -132,7 +134,10 @@ public class AddHubAndSpokeTest extends DriverTestCase {
 		scrollDown("500");
 
 		transactionPage.verify_NRC_MRC_PricesForHub(_nrc_Net_Price_Hub, _mrc_Net_Price_Hub);
-
+*/
+		Thread.sleep(4000);
+		modelConfigurationPage.click(modelConfigurationPage.addToTransaction);
+		
 		transactionPage.clickOnSaveButton();
 
 		productListPage.clickOnOrderManagerLink();

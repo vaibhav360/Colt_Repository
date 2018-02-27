@@ -22,7 +22,7 @@ public class DataDrivenForEthernet extends DriverTestCase {
 	public void doLogin() throws Exception {
 		setUp();
 		oppID = c4cpropertyReader.readApplicationData("opportutnityID");
-		listPriceConnection = ExcelDataBaseConnector.createConnection("List_Price_Small");
+		listPriceConnection = ExcelDataBaseConnector.createConnection("NewListPriceSheet");
 		test_01_Navigate_From_C4C_To_CPQ();
 	}
 
@@ -42,7 +42,7 @@ public class DataDrivenForEthernet extends DriverTestCase {
 		// reportLog("Navigating C4C Application URl: " + c4c_url);
 		c4cappPage._waitForJStoLoad();
 		c4cappPage.loginInToC4CApplication(c4c_userName, c4c_Password);
-		c4cappPage.verifyTitle("Home - SAP Hybris Cloud for Customer");
+		c4cappPage.verifyTitle("SAP Hybris Cloud for Customer");
 		c4cappPage.goToOpportunityPage();
 		opportunityPage.searchOpportunity(oppID);
 		opportunityPage.selectParticularOpportunity(Integer.parseInt(oppID));
@@ -53,7 +53,7 @@ public class DataDrivenForEthernet extends DriverTestCase {
 	@Test(dataProviderClass = DataProviderRepository.class, dataProvider = "testDataProvider")
 	public void test_02_check_Connectivity_And_Price_Of_sites_On_Basis_Of_UI_Segment(Object obj) throws Exception {
 
-		opportunityPage.switchWindow("SAP Hybris Cloud for Customer");
+		//opportunityPage.switchWindow("SAP Hybris Cloud for Customer");
 		opportunityPage.addNewQuoteFromOpportunity();
 		opportunityPage.switchWindow("Transaction");
 		reportLog("Switching on CQP tab");
@@ -72,16 +72,15 @@ public class DataDrivenForEthernet extends DriverTestCase {
 
 		String currencyType = transactionPage.getUICurrencyType();
 		String segment = transactionPage.getUISegment();
-		cpqModel.setSegment(segment);
+		//cpqModel.setSegment(segment);
 
 		productListPage.AddproductType("Ethernet");
 		reportLog("Adding EtherNet Product");
 
 		c4cappPage.verifyTitle("Model Configuration");
 		reportLog("Verifying the title 'Model Configuration'");
-
-		modelConfigurationPage.selectBandwidthAndResiliencyInEthernet(cpqModel.getBandWidth(),
-				cpqModel.getResiliency());
+		
+		modelConfigurationPage.selectBandwidth(cpqModel.getBandWidth());
 
 		modelConfigurationPage.enterAddresses(cpqModel.getSite_A_Add(), cpqModel.getSite_B_Add());
 
@@ -91,6 +90,8 @@ public class DataDrivenForEthernet extends DriverTestCase {
 		modelConfigurationPage.click(modelConfigurationPage.checkConnectivityButton);
 		reportLog("Click on to CheckConnectivity button");
 
+		modelConfigurationPage.enterResiliency(cpqModel);
+		
 		modelConfigurationPage.verifyConnectivity();
 
 		modelConfigurationPage.verifyBlankPricesMessage();

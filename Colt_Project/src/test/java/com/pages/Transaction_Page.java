@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
@@ -78,6 +79,16 @@ public class Transaction_Page extends BasePage {
 
 	@FindBy(id = "save")
 	public WebElement savebutton;
+	
+	@FindBy(id = "return_to_c4c")
+	public WebElement returnToC4CButton;
+	
+	@FindBy(id = "download_quote_excel")
+	public WebElement quoteDownloadButton;
+	
+	@FindBy(xpath = "//td[text()='Get Contact Details']")
+	public List<WebElement> getContactDetailButton;
+	
 
 	@FindBy(xpath = "//*[text()='Delete Line Items']")
 	public WebElement delete;
@@ -225,7 +236,25 @@ public class Transaction_Page extends BasePage {
 	
 	@FindBy(xpath = "//span[text()='Approval History[Submit]']")
 	public WebElement afterSubmitMsg;
+	
+	@FindBy(xpath = "//*[@id=\"field_wrapper_1_opportunityID_t\"]/div[1]/span")
+	public WebElement opportunityIdText;
+	
+	@FindBy(xpath = "//*[@id=\"field_wrapper_1_oCN_t\"]/div[1]/span")
+	public WebElement accoundIdText;
+	
+	@FindBy(id = "billing_information")
+	public WebElement billingInfoButton;
+	
+	@FindBy(id = "reset_discount")
+	public WebElement resetDiscount;
 
+	@FindBy(id = "calculate_discount")
+	public List<WebElement> calculateDiscountButton;
+	
+	@FindBy(id = "change_currency")
+	public WebElement changeCurrencyButton;
+	
 
 	public void enterDetailsWhileUploadMargin(String data) {
 		sendKeys(transactionPage.dealBackgroundInput, data);
@@ -257,6 +286,25 @@ public class Transaction_Page extends BasePage {
 	public void clickOnAddProductBtn() {
 		javascriptScrollIntoView(addProductButton);
 		click(addProductButton);
+	}
+	
+	
+	public Transaction_Page verifyQuoteDetailsElements()
+	{
+		
+		Assert.assertEquals(opportunityIdText.isDisplayed(), true,"Opportunity id is not present in quote detail");
+		Assert.assertEquals(accoundIdText.isDisplayed(), true,"Accound id is not present in quote detail page");
+		Assert.assertEquals(savebutton.isDisplayed(), true,"Save button is not present in quote detail page");
+		Assert.assertEquals(returnToC4CButton.isDisplayed(), true,"Return To C4CButton is not present in quote detail page");
+		Assert.assertEquals(quoteDownloadButton.isDisplayed(), true,"Quote download button is not present in quote detail page.");
+		scrollDownToBottom();
+		Assert.assertEquals(billingInfoButton.isDisplayed(), true,"Billing info button is not present in quote detail page");
+		Assert.assertEquals(addProductButton.isDisplayed(), true,"Add product button is not present in quite detail page");
+		Assert.assertEquals(calculateDiscountButton.size(), 2,"calculate Discount Buttonis not present in quote detail page");
+		Assert.assertEquals(resetDiscount.isDisplayed(), true,"Reset Discount button is not present in quite detail page");
+		Assert.assertEquals(getContactDetailButton.size(), 2,"Get Contact details button is not present");
+		
+		return PageFactory.initElements(getWebDriver(), Transaction_Page.class);
 	}
 
 	public void navigateFromCopyLineItemsToDelete() throws InterruptedException {

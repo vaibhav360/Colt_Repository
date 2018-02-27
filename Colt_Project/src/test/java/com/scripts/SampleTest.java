@@ -52,13 +52,12 @@ public class SampleTest extends DriverTestCase{
 		opportunityPage.addNewQuoteFromOpportunity();
 		opportunityPage.switchWindow("Transaction");
 		productListPage.AddproductType("Ethernet");
-		modelConfigurationPage.selectBandwidthAndResiliencyInEthernet("1 Gbps","Protected");
-
+		modelConfigurationPage.selectBandwidth("1 Gbps");
 		modelConfigurationPage.enterAddresses("11, Museumstraat, Antwerp, Belgium, 2000"
 				,"3, Schalienstraat, Antwerp, Belgium, 2000");
-		
 		modelConfigurationPage.click(modelConfigurationPage.update);
 		modelConfigurationPage.click(modelConfigurationPage.checkConnectivityButton);
+		modelConfigurationPage.enterProductResiliency("Protected");
 	}
 	
 	
@@ -88,7 +87,7 @@ public class SampleTest extends DriverTestCase{
 		long totalTime = endTime - startTime;
 		System.out.println(totalTime);
 		
-		//modelConfigurationPage.enterWriteProductPrices();
+		modelConfigurationPage.enterWriteProductPrices();
 		//updateDataInExcel();
 		
 		

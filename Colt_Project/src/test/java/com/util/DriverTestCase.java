@@ -2,6 +2,8 @@ package com.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -63,6 +65,10 @@ public abstract class DriverTestCase {
 	protected static Product_List_Page productListPage;
 	protected static Transaction_Page transactionPage;
 	public static C4CAppPage c4cappPage;
+	public static FileInputStream inputExcel;
+	public static  FileOutputStream outputExcel;
+	public static String reportExcelPath ="\\src\\test\\resources\\ExcelReport\\JavascriptDataUpdated.xlsx";
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(DriverTestCase.class);
 
@@ -115,7 +121,7 @@ public abstract class DriverTestCase {
 	}
 
 	// @BeforeMethod
-	public void setUp() {
+	public void setUp() throws FileNotFoundException {
 		/*
 		 * test = extent.startTest(this.getClass().getSimpleName(),
 		 * Method.class.getName()); test.assignAuthor("360Logica");
@@ -166,6 +172,8 @@ public abstract class DriverTestCase {
 		transactionPage = PageFactory.initElements(getWebDriver(), Transaction_Page.class);
 		commerceManagementPage = PageFactory.initElements(getWebDriver(), Commerce_Management_Page.class);
 		c4cappPage = PageFactory.initElements(getWebDriver(), C4CAppPage.class);
+		inputExcel= new FileInputStream(new File(System.getProperty("user.dir")+"\\ExcelFile\\JavascriptData.xlsx"));
+		outputExcel= new FileOutputStream(new File(System.getProperty("user.dir")+ reportExcelPath));
 
 	}
 

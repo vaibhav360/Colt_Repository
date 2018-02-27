@@ -60,6 +60,11 @@ public abstract class BasePage extends DriverTestCase {
 		return result;
 	}
 
+	public void scrollDownToBottom() {
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		jse.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+	}
+	
 	// Assert element present
 	public Boolean isElementPresent(String locator) {
 		Boolean result = false;
@@ -193,7 +198,7 @@ public abstract class BasePage extends DriverTestCase {
 
 	public void verifyTitle(String title) {
 		_waitForJStoLoad();
-		sleepExecution(3);
+		sleepExecution(5);
 		String actualTitle = getWebDriver().getTitle();
 		Assert.assertTrue(actualTitle.contains(title));
 		// reportLog("Expected Title: " + title + "" + " <br /> Actual Title: " +
@@ -512,6 +517,8 @@ public abstract class BasePage extends DriverTestCase {
 				break;
 			}
 		}
+		sleepExecution(5);
+		_waitForJStoLoad();
 	}
 
 	public WebDriver doubleClick(WebElement element) {

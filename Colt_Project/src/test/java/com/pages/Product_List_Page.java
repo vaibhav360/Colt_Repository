@@ -1,5 +1,6 @@
 package com.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -21,8 +22,15 @@ public class Product_List_Page extends BasePage {
 	@FindBy(xpath = "//a[text()='Ethernet Line']")
 	public WebElement ethernetLineLink;
 
-	@FindBy(xpath = "//a[text()='Ethernet Hub and Spoke']")
-	public WebElement ethernetHubSpokeLink;
+	@FindBy(xpath = "//a[text()='Ethernet Hub']")
+	public WebElement ethernetHubLink;
+	
+	@FindBy(xpath = "//a[text()='Ethernet Spoke']")
+	public WebElement ethernetSpokeLink;
+	
+	public static By getLinkButton(String text) {
+		return By.xpath("//a[text()='" + text + "']");
+	}
 
 	public void AddproductType(String type) throws InterruptedException {
 
@@ -38,9 +46,24 @@ public class Product_List_Page extends BasePage {
 			reportLog("Click on to EnternetLine Product");
 
 		}
-		if (type.equals("Hub")) {
-			ethernetHubSpokeLink.click();
+		else if (type.equals("Hub")) {
+			waitAndClick(ethernetHubLink);
+			//ethernetHubLink.click();
+			reportLog("Click on to Enternet Hub Product");
 		}
+		else if(type.equals("Spoke"))
+		{
+			waitAndClick(ethernetSpokeLink);
+			//ethernetSpokeLink.click();
+			reportLog("Click on to Enternet Spoke Product");
+		}
+		else if(type.equals("Wave"))
+		{
+			hoverOverElementAndClick(driver.findElement(getLinkButton("Optical")), driver.findElement(getLinkButton("Wave")));
+			reportLog("Click on to Optical Wave Product");
+			
+		}
+		
 		_waitForJStoLoad();
 		waitForAjaxRequestsToComplete();
 		verifyTitle("Model Configuration");

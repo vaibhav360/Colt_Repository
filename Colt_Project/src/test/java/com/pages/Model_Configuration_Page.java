@@ -8,8 +8,12 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindAll;
@@ -30,11 +34,23 @@ public class Model_Configuration_Page extends BasePage {
 		// PageFactory.initElements(driver, Model_Configuration_Page.class);
 	}
 
-	@FindBy(name = "serviceBandwidth")
+	@FindBy(id = "serviceBandwidth")
 	public WebElement serviceBandwidth;
 
-	@FindBy(id = "resiliency")
-	public WebElement resiliency;
+	@FindBy(id = "aEndResiliency")
+	public WebElement aEndResiliency;
+
+	@FindBy(id = "resiliencyServiceLevel")
+	public WebElement Resiliency;
+
+	@FindBy(id = "hubListForSpoke")
+	public WebElement hubType;
+
+	@FindBy(id = "bEndResiliency")
+	public WebElement bEndResiliency;
+
+	@FindBy(xpath = "//select[@id='resiliencyServiceLevel']//option")
+	public List<WebElement> resiliencyOptions;
 
 	@FindAll({ @FindBy(id = "siteAddressAEnd"), @FindBy(name = "siteAddressAEnd") })
 	public WebElement siteAddressAEnd;
@@ -69,14 +85,28 @@ public class Model_Configuration_Page extends BasePage {
 	@FindBy(id = "update")
 	public WebElement update;
 
-	@FindBy(xpath = "//a[@name='next']")
+	@FindBy(xpath = "//td[text()='Check Connectivity']")
 	public WebElement checkConnectivityButton;
+
+	@FindBy(xpath = "//label[text()='Building Type']/parent::div/following-sibling::div/span")
+	public WebElement actualBuildingType;
+
+
+	public static By getSiteDetailValues(String name) {
+		return By.xpath("//label[text()='" + name + "']/parent::div/following-sibling::div/span");
+	}
 
 	@FindBy(id = "return_-_transaction")
 	public WebElement returnToQuoteButton;
 
 	@FindBy(id = "start_over")
 	public WebElement start_over;
+
+	@FindBy(id = "cancel_configuration")
+	public WebElement cancelConfigurationButton;
+
+	@FindBy(xpath = "//button[@title='Zoom in']")
+	public WebElement mapZoomButton;
 
 	@FindBy(id = "contractTermInMonths")
 	public WebElement contractTerm;
@@ -168,6 +198,24 @@ public class Model_Configuration_Page extends BasePage {
 	@FindBy(id = "add_to_transaction")
 	public WebElement addToTransaction;
 
+	@FindBy(xpath = "//div[@title='Reconfigure']")
+	public WebElement reconfigureButton;
+
+	@FindBy(id = "billing_information")
+	public WebElement billingInformation;
+
+	@FindBy(id = "calculate_discount")
+	public List<WebElement> calculateDiscount;
+
+	@FindBy(id = "copy_line_items")
+	public WebElement copyLineItem;
+
+	@FindBy(id = "delete_line_items")
+	public WebElement deleteLineItems;
+
+	@FindBy(id = "reset_discount")
+	public WebElement resetDiscount;
+
 	@FindBy(id = "save")
 	public WebElement saveBtn;
 
@@ -191,6 +239,12 @@ public class Model_Configuration_Page extends BasePage {
 
 	@FindBy(xpath = "//*[text()='Quote']")
 	public WebElement gotoquote;
+
+	@FindBy(xpath = "//span[text()='Site Details']")
+	public WebElement siteDetailPage;
+
+	@FindBy(xpath = "//span[text()='Site Address']")
+	public WebElement siteAddressPage;
 
 	@FindBy(name = "nRCDiscountType_t")
 	public WebElement discount;
@@ -269,7 +323,7 @@ public class Model_Configuration_Page extends BasePage {
 
 	@FindBy(name = "countryAEnd")
 	public WebElement countryAEnd;
-	
+
 	@FindBy(name = "countryBEnd")
 	public WebElement countryBEnd;
 
@@ -296,41 +350,31 @@ public class Model_Configuration_Page extends BasePage {
 
 	@FindBy(name = "siteTypeBEnd ")
 	public WebElement siteTypeBEnd;
-	
+
 	@FindBy(xpath = "//*[@id=\"chargesServiceLevel\"]/table/tbody/tr[2]/td[2]")
 	public WebElement copyaddress;
-	
-	
-	@FindBy(name = "resiliency") 
+
+	@FindBy(name = "resiliency")
 	public WebElement resilencyjavascript;
-	
-	
+
 	@FindBy(name = "pricingSegment")
 	public WebElement pricingSegment;
-	
-	
-	@FindBy(xpath = "//div[@id='chargesServiceLevel']/table//tr[2]/td[2]") 
+
+	@FindBy(xpath = "//div[@id='chargesServiceLevel']/table//tr[2]/td[2]")
 	public WebElement nrcPrice;
-	
-	
+
 	@FindBy(xpath = "//div[@id='chargesServiceLevel']/table//tr[2]/td[3]")
 	public WebElement mrcPrice;
-	
-	
+
 	@FindBy(name = "contractTermInMonths")
 	public WebElement contractTermInMonths;
-	
-	
+
 	@FindBy(name = "currency")
 	public WebElement currency;
-	
-	
-	
-	//div[@id='chargesServiceLevel']/table//tr[2]/td[3]
 
-	public void enterHubAndSpokeAddress(DataModelCPQ cpqModel) {
-		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.resiliency, cpqModel.getResiliency());
-		reportLog("Select Resiliency: " + cpqModel.getResiliency());
+	// div[@id='chargesServiceLevel']/table//tr[2]/td[3]
+
+	public void enterHubAddress(DataModelCPQ cpqModel) {
 
 		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.serviceBandwidth, cpqModel.getBandWidth());
 		reportLog("Select BandWidth: " + cpqModel.getBandWidth());
@@ -342,21 +386,75 @@ public class Model_Configuration_Page extends BasePage {
 		reportLog("Enter Site A address: " + cpqModel.getSite_A_Add());
 		_waitForJStoLoad();
 
-		modelConfigurationPage.spokeRequired_true.click();
-		reportLog("Click on Spoke Required");
-		_waitForJStoLoad();
+		/*
+		 * modelConfigurationPage.spokeRequired_true.click();
+		 * reportLog("Click on Spoke Required"); _waitForJStoLoad();
+		 * 
+		 * scrollDown("400");
+		 * selectDropDownByText(modelConfigurationPage.bandwidthSpoke,
+		 * cpqModel.getSpokeBandwidth()); reportLog("Select Spoke Bandwidth: " +
+		 * "1 Gbps"); _waitForJStoLoad();
+		 * 
+		 * sendKeys(modelConfigurationPage.siteAddressSpoke, cpqModel.getSite_A_Add());
+		 * _waitForJStoLoad(); pressDownArrowKey(); pressEnterKey();
+		 * reportLog("Enter Spoke Address: " + cpqModel.getSite_B_Add());
+		 * _waitForJStoLoad();
+		 */ }
 
-		scrollDown("400");
-		selectDropDownByText(modelConfigurationPage.bandwidthSpoke, cpqModel.getSpokeBandwidth());
-		reportLog("Select Spoke Bandwidth: " + "1 Gbps");
-		_waitForJStoLoad();
+	public void enterHubAddress(String bandwidth, String address) {
 
-		sendKeys(modelConfigurationPage.siteAddressSpoke, cpqModel.getSite_A_Add());
+		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.serviceBandwidth, bandwidth);
+		reportLog("Select BandWidth: " + bandwidth);
+
+		
+		sendKeys(modelConfigurationPage.siteAddressAEnd, address);
 		_waitForJStoLoad();
 		pressDownArrowKey();
 		pressEnterKey();
-		reportLog("Enter Spoke Address: " + cpqModel.getSite_B_Add());
+		reportLog("Enter Site A address: " + address);
+		waitForAjaxRequestsToComplete();
+	}
+	
+	public void selectHub()
+	{
+		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.hubType, "Hub1");
+		reportLog("Select hub type: " + "Hub1");
+	}
+
+	public void enterSpokeAddress(DataModelCPQ cpqModel) {
+
+		selectHub();
 		_waitForJStoLoad();
+
+		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.serviceBandwidth, cpqModel.getBandWidth());
+		reportLog("Select BandWidth: " + cpqModel.getBandWidth());
+
+		sendKeys(modelConfigurationPage.siteAddressAEnd, cpqModel.getSite_A_Add());
+		_waitForJStoLoad();
+		pressDownArrowKey();
+		pressEnterKey();
+		reportLog("Enter Spoke address: " + cpqModel.getSite_A_Add());
+		_waitForJStoLoad();
+
+	}
+
+
+	
+	
+	public void enterResiliency(DataModelCPQ cpqModel) {
+		_waitForJStoLoad();
+		javascriptButtonClick(siteDetailPage);
+		_waitForJStoLoad();
+		System.out.println(cpqModel.getResiliency());
+		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.Resiliency, cpqModel.getResiliency());
+		reportLog("Select Resiliency: " + cpqModel.getResiliency());
+	}
+
+	public void enterProductResiliency(String resiliency) {
+		_waitForJStoLoad();
+		clickOn(siteDetailPage);
+		modelConfigurationPage.selectDropDownByText(modelConfigurationPage.Resiliency, resiliency);
+		reportLog("Select Resiliency: " + resiliency);
 	}
 
 	/**
@@ -469,29 +567,188 @@ public class Model_Configuration_Page extends BasePage {
 		reportLog("Click on to Update button");
 	}
 
+	public String AddHubAndSpokeProduct(String hubBandwidth, String hubAddress, String hubResiliency, String spokeBandwidth, String spokeAddress) throws InterruptedException
+	{
+		if(hubResiliency.equals("Protected"))
+		{
+			productListPage.AddproductType("Hub");
+			enterHubAddress(hubBandwidth,hubAddress);
+			checkConnectivity();
+			enterProductResiliency(hubResiliency);
+			saveQuoteButton();
+			productListPage.AddproductType("Spoke");			
+			
+		}
+		else if(hubResiliency.equals("Gold"))
+		{
+			productListPage.AddproductType("Hub");
+			verifyTitle("Model Configuration");
+			enterHubAddress(hubBandwidth,hubAddress);
+			checkConnectivity();
+			enterProductResiliency(hubResiliency);
+			saveQuoteButton();
+			productListPage.AddproductType("Spoke");			
+			
+		}
+		else if(hubResiliency.equals("Platinum"))
+		{
+			productListPage.AddproductType("Hub");
+			verifyTitle("Model Configuration");
+			enterHubAddress(hubBandwidth,hubAddress);
+			checkConnectivity();
+			enterProductResiliency(hubResiliency);
+			saveQuoteButton();
+			productListPage.AddproductType("Spoke");			
+			
+		}
+		else
+		{
+			navigateToSiteAddress();
+		}
+		
+		
+		selectHub();
+		enterHubAddress(spokeBandwidth,spokeAddress);
+		checkConnectivity();
+		navigateToSiteDetail();			
+		String resiliency = modelConfigurationPage.getSiteResiliency();
+		
+		
+		return resiliency;
+	}
+	
+	public void alertOK()
+	{
+		try{
+			Alert alert= driver.switchTo().alert();
+			alert.accept();
+			waitForAjaxRequestsToComplete();
+			
+		}catch(NoAlertPresentException e)
+		{
+			System.out.println("No alert is present. Please check.");
+		}	
+	}
+	
 	public void enterAddresses(String siteA, String siteB) {
+		siteAddressAEnd.clear();
 		sendKeys(siteAddressAEnd, siteA);
 		_waitForJStoLoad();
 		pressDownArrowKey();
 		pressEnterKey();
 		reportLog("Enter Site A address: " + siteA);
-		_waitForJStoLoad();
-
+		waitForAjaxRequestsToComplete();
+		alertOK();
+		
+		siteAddressBEnd.clear();
 		sendKeys(siteAddressBEnd, siteB);
 		_waitForJStoLoad();
 		pressDownArrowKey();
 		pressEnterKey();
 		reportLog("Enter Site B address: " + siteB);
-		_waitForJStoLoad();
+		waitForAjaxRequestsToComplete();
+		alertOK();
 	}
 
-	public void selectBandwidthAndResiliencyInEthernet(String band, String res) {
-		selectDropDownByText(resiliency, res);
-		reportLog("Select Resiliency: " + res);
+	public void checkConnectivity() {
+		update.click();
+		_waitForJStoLoad();
+		javascriptButtonClick(checkConnectivityButton);
+		_waitForJStoLoad();
 
+	}
+
+	public String getBuildingType() {
+		_waitForJStoLoad();
+		javascriptButtonClick(siteDetailPage);
+		_waitForJStoLoad();
+		return actualBuildingType.getText();
+	}
+	
+	public String buildingType()
+	{
+		List<WebElement> ele = driver.findElements(getSiteDetailValues("Building Type"));
+		List<String>  getbuildingType =  new ArrayList<>();
+		getbuildingType.add(ele.get(0).getText());
+		getbuildingType.add(ele.get(1).getText());
+		
+		return getbuildingType.toString();
+		
+	}
+	
+	public void navigateToSiteDetail()
+	{
+		_waitForJStoLoad();
+		javascriptButtonClick(siteDetailPage);
+		_waitForJStoLoad();
+		
+	}
+
+	public String getCoverage() {
+		navigateToSiteDetail();
+		sleepExecution(3);
+		return driver.findElement(getSiteDetailValues("Coverage")).getText();
+
+	}
+
+	public String getSiteResiliency() {
+		/*clickOn(Resiliency);
+		sleepExecution(2);*/
+		_waitForJStoLoad();
+		List<String> avaiableResiliencies = new ArrayList<>();
+		for (int j = 0; j < resiliencyOptions.size(); j++) {
+			System.out.println(resiliencyOptions.get(j).getText());
+			avaiableResiliencies.add(resiliencyOptions.get(j).getText());
+		}
+		String actualResiliencies = avaiableResiliencies.toString();
+		return actualResiliencies;
+		
+
+	}
+
+	public void verifyButtonsPresent() {
+		Assert.assertEquals(update.isDisplayed(), true, "Update button is not available");
+		Assert.assertEquals(start_over.isDisplayed(), true, "Start Over button is not available");
+		Assert.assertEquals(cancelConfigurationButton.isDisplayed(), true,
+				"Cancel configuration button is not present");
+		/*
+		 * driver.switchTo().frame("siteAddressLink");
+		 * Assert.assertEquals(mapZoomButton.isDisplayed(), true,"Map is not present");
+		 * driver.switchTo().defaultContent();
+		 */
+	}
+
+	public void saveQuoteButton() {
+		_waitForJStoLoad();
+		addToTransaction.click();
+		_waitForJStoLoad();
+
+	}
+
+	public void verifyProductAddedAndAvailableButtons() {
+		Assert.assertEquals(reconfigureButton.isDisplayed(), true, "Reconfigure button is not present");
+		Assert.assertEquals(billingInformation.isDisplayed(), true, "Billing information button is not present");
+		Assert.assertEquals(calculateDiscount.size(), 2, "Calculate discount button is not present");
+		Assert.assertEquals(copyLineItem.isDisplayed(), true, "Copy line item button is not present");
+		Assert.assertEquals(deleteLineItems.isDisplayed(), true, "Delete line item button is not present");
+		Assert.assertEquals(resetDiscount.isDisplayed(), true, "Reset discount button is not present");
+
+	}
+
+	public void selectBandwidth(String band) {
+
+		_waitForJStoLoad();
 		selectDropDownByText(serviceBandwidth, band);
 		reportLog("Select BandWidth: " + band);
 	}
+
+	/*
+	 * selectDropDownByText(aEndResiliency, res); reportLog("Select Resiliency: " +
+	 * res);
+	 * 
+	 * selectDropDownByText(bEndResiliency, res); reportLog("Select Resiliency: " +
+	 * res);
+	 */
 
 	public void verifyConnectivity() {
 		boolean flag = isElementDisplayed(connectivityMsgA);
@@ -626,9 +883,13 @@ public class Model_Configuration_Page extends BasePage {
 		return value;
 	}
 
+	public void addAddons(DataModelCPQ cpqModel) {
+
+	}
+
 	public void addDetailsfromEthernetLineTositedetails() throws InterruptedException {
 
-		selectDropDownByText(resiliency, "Protected");
+		selectDropDownByText(aEndResiliency, "Protected");
 		reportLog("Select Resiliency: Protected ");
 
 		selectDropDownByText(serviceBandwidth, "100 Gbps");
@@ -713,7 +974,7 @@ public class Model_Configuration_Page extends BasePage {
 
 	public void AddDetailsHubSpokeTositedetails() {
 
-		selectDropDownByText(resiliency, "Protected");
+		selectDropDownByText(aEndResiliency, "Protected");
 		reportLog("Select Resiliency: Protected");
 
 		selectDropDownByText(serviceBandwidth, "10 Gbps");
@@ -792,16 +1053,15 @@ public class Model_Configuration_Page extends BasePage {
 		javascriptSendKeys(siteAddressAEnd, model.getSite_A_Add());
 		javascriptSendKeys(countryAEnd, model.getCountry());
 		javascriptSendKeys(cityAEnd, model.getCityName());
-		javascriptSendKeys(postCodeAEnd,removeDecimalValues(model.getPostCode()));
+		javascriptSendKeys(postCodeAEnd, removeDecimalValues(model.getPostCode()));
 		javascriptSendKeys(premiseNumberAEnd, removeDecimalValues(model.getBuildingNumber()));
 		javascriptSendKeys(premises_master_id_a_end, removeDecimalValues(model.getMasterId()));
 		javascriptSendKeys(selectedConnectivityOptionsRowAEnd, str);
 		javascriptSendKeys(streetNameAEnd, model.getStreetName());
 		javascriptSendKeys(buildingTypeA, model.getBuilding_Type());
-		
 
 	}
-	
+
 	public void enterSiteBDetailByJavascript(DataModelCPQ model) {
 		String str = "0##Colt LANLink Point to Point (Ethernet Point to Point)"
 				+ "**On-Net**Colt**I0042**SESTO-0000076039**Colt Fibre**3rd Party Leased Fibre"
@@ -822,39 +1082,102 @@ public class Model_Configuration_Page extends BasePage {
 		javascriptSendKeys(contractTermInMonths, removeDecimalValues(model.getContract_Term()));
 
 	}
-	
-	public void enterWriteProductPrices() throws IOException
-	{
+
+	public void enterWriteProductPrices() throws IOException {
 		String text = nrcPrice.getText();
 		System.out.println("NRC Price :: " + text);
-		
-		String text1 = mrcPrice.getText();
-		System.out.println("MRC Price:: "+ text1);		
-		
-		PrintWriter out = null;
-	    BufferedWriter bufWriter;
 
-	    try{
-	        bufWriter =
-	            Files.newBufferedWriter(
-	                Paths.get("C:/Users/himanshud/Desktop/coltpad.txt"),
-	                Charset.forName("UTF8"),	                             
-	                StandardOpenOption.APPEND);	              
-	        out = new PrintWriter(bufWriter, true);
-	    }catch(IOException e){
-	        
-	    }
-	    
-	    //After successful creation of PrintWriter
-	    out.println("NRC Price : "+  text + "  "+ "MRC Price : " + text1 );
-	    
-	    //After done writing, remember to close!
-	    out.close();
-		
-		
-	
-		
+		String text1 = mrcPrice.getText();
+		System.out.println("MRC Price:: " + text1);
+
+		PrintWriter out = null;
+		BufferedWriter bufWriter;
+
+		try {
+			bufWriter = Files.newBufferedWriter(Paths.get("C:/Users/abhishekbs/Desktop/coltpad.txt"),
+					Charset.forName("UTF8"), StandardOpenOption.APPEND);
+			out = new PrintWriter(bufWriter, true);
+		} catch (IOException e) {
+
+		}
+
+		// After successful creation of PrintWriter
+		out.println("NRC Price : " + text + "  " + "MRC Price : " + text1);
+
+		// After done writing, remember to close!
+		out.close();
+
+	}
+
+	public void navigateToSiteAddress() {
+		sleepExecution(1);
+		javascriptButtonClick(siteAddressPage);
+		_waitForJStoLoad();
+	}
+
+	public void enterWriteBuildingType(String address, String buildingType) throws IOException {
+
+		PrintWriter out = null;
+		BufferedWriter bufWriter;
+
+		try {
+			bufWriter = Files.newBufferedWriter(Paths.get("C:/Users/abhishekbs/Desktop/coltpad.txt"),
+					Charset.forName("UTF8"), StandardOpenOption.APPEND);
+			out = new PrintWriter(bufWriter, true);
+		} catch (IOException e) {
+
+		}
+
+		// After successful creation of PrintWriter
+		out.println("Site Adress : " + address + "  " + "BuildingType : " + buildingType);
+
+		// After done writing, remember to close!
+		out.close();
+
+	}
+
+	public void enterWriteBuildingType(String aEndAddress, String bEndAddress, String resiliency) throws IOException {
+
+		PrintWriter out = null;
+		BufferedWriter bufWriter;
+
+		try {
+			bufWriter = Files.newBufferedWriter(Paths.get("C:/Users/abhishekbs/Desktop/coltpad.txt"),
+					Charset.forName("UTF8"), StandardOpenOption.APPEND);
+			out = new PrintWriter(bufWriter, true);
+		} catch (IOException e) {
+
+		}
+
+		// After successful creation of PrintWriter
+		out.println("A Site Adress : " + aEndAddress + " " + "B Site Adress : " + bEndAddress + "  " + "Resiliencies : "
+				+ resiliency);
+
+		// After done writing, remember to close!
+		out.close();
+
 	}
 	
 
+	public void enterWriteBuildingType(String aEndAddress, String bEndAddress, String coverage,String buildingType) throws IOException {
+
+		PrintWriter out = null;
+		BufferedWriter bufWriter;
+
+		try {
+			bufWriter = Files.newBufferedWriter(Paths.get("C:/Users/abhishekbs/Desktop/coltpad.txt"),
+					Charset.forName("UTF8"), StandardOpenOption.APPEND);
+			out = new PrintWriter(bufWriter, true);
+		} catch (IOException e) {
+
+		}
+
+		// After successful creation of PrintWriter
+		out.println("A Site Adress : " + aEndAddress + " " + "B Site Adress : " + bEndAddress + "  " + "Coverage : "
+				+ coverage +" " + "buildingtype: " + buildingType);
+
+		// After done writing, remember to close!
+		out.close();
+
+	}
 }

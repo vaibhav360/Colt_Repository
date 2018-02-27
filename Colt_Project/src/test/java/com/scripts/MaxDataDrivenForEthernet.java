@@ -1,5 +1,6 @@
 package com.scripts;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.testng.ITestResult;
@@ -17,7 +18,7 @@ import com.util.Utilities;
 public class MaxDataDrivenForEthernet extends DriverTestCase {
 
 	@BeforeClass
-	public void doLogin() throws InterruptedException {
+	public void doLogin() throws InterruptedException, FileNotFoundException {
 		setUp();
 		/*
 		 * String username = configReader.readApplicationFile("Username"); String
@@ -83,8 +84,7 @@ public class MaxDataDrivenForEthernet extends DriverTestCase {
 		c4cappPage.verifyTitle("Model Configuration");
 		reportLog("Verifying the title 'Model Configuration'");
 
-		modelConfigurationPage.selectBandwidthAndResiliencyInEthernet(cpqModel.getBandWidth(),
-				cpqModel.getResiliency());
+		modelConfigurationPage.selectBandwidth(cpqModel.getBandWidth());
 
 		modelConfigurationPage.enterAddresses(cpqModel.getSite_A_Add(), cpqModel.getSite_B_Add());
 
@@ -93,6 +93,8 @@ public class MaxDataDrivenForEthernet extends DriverTestCase {
 
 		modelConfigurationPage.click(modelConfigurationPage.checkConnectivityButton);
 		reportLog("Click on to CheckConnectivity button");
+		
+		modelConfigurationPage.enterResiliency(cpqModel);
 
 		modelConfigurationPage.verifyConnectivity();
 

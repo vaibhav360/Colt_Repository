@@ -64,7 +64,7 @@ public class DataDrivenForEthernetTest extends DriverTestCase {
 
 		c4cappPage.verifyTitle("Transaction");
 		reportLog("Verifying the title 'Transaction'");
-
+		
 		transactionPage.sendKeys(transactionPage.quoteName, cpqModel.getQuoteName());
 		reportLog("Type QuoteName: " + cpqModel.getQuoteName());
 
@@ -81,9 +81,8 @@ public class DataDrivenForEthernetTest extends DriverTestCase {
 		c4cappPage.verifyTitle("Model Configuration");
 		reportLog("Verifying the title 'Model Configuration'");
 
-		modelConfigurationPage.selectBandwidthAndResiliencyInEthernet(cpqModel.getBandWidth(),
-				cpqModel.getResiliency());
-
+		modelConfigurationPage.selectBandwidth(cpqModel.getBandWidth());
+		
 		modelConfigurationPage.enterAddresses(cpqModel.getSite_A_Add(), cpqModel.getSite_B_Add());
 
 		modelConfigurationPage.click(modelConfigurationPage.update);
@@ -94,6 +93,8 @@ public class DataDrivenForEthernetTest extends DriverTestCase {
 
 		modelConfigurationPage.verifyConnectivity();
 
+		modelConfigurationPage.enterResiliency(cpqModel);
+		
 		modelConfigurationPage.verifyBlankPricesMessage();
 
 		String coverage = modelConfigurationPage.getUICoverage();

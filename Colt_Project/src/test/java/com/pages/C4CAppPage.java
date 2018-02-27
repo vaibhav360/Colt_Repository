@@ -13,14 +13,19 @@ public class C4CAppPage extends BasePage {
 		super(webdriver);
 	}
 
-	@FindBy(id = "userId")
+	@FindBy(id = "username")
 	public WebElement username;
 
 	@FindBy(id = "password")
 	public WebElement password;
 
-	@FindBy(id = "Submit")
+	@FindBy(xpath = "//*[text()='Login']")
 	public WebElement logInBtn;
+	
+	
+	@FindBy(id = "__button0-content")
+	public WebElement yesPopUp;
+	
 
 	@FindBy(xpath = "//*[text()='Customers']")
 	public WebElement customers;
@@ -79,6 +84,18 @@ public class C4CAppPage extends BasePage {
 		//reportLog("Click on Login Button");
 		_waitForJStoLoad();
 		waitForAjaxRequestsToComplete();
+		sleepExecution(3);
+		try {
+			if(yesPopUp.isDisplayed())
+				yesPopUp.click();
+				_waitForJStoLoad();
+				waitForAjaxRequestsToComplete();
+		}
+		catch(Exception ex)
+		{
+			System.out.println("Pop up didn't show up");
+		}
+		
 
 	}
 	
@@ -106,6 +123,7 @@ public class C4CAppPage extends BasePage {
 		sleepExecution(4);
 		waitAndClick(myAccount);
 		//reportLog("Click on downarrow button");
+		_waitForJStoLoad();
 		
 		waitAndClick(all);
 		//reportLog("Select all from dialog");

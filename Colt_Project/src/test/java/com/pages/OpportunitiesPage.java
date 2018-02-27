@@ -24,6 +24,10 @@ public class OpportunitiesPage extends BasePage {
 
 	@FindBy(xpath = "(//*[text()='Quotes'])[1]")
 	public WebElement quotes;
+	
+	@FindBy(xpath = "//span[@title='Name']")
+	public WebElement opportunityName;
+	
 
 	@FindBy(xpath = "//*[text()='QUOTES']")
 	public WebElement quotesTab;
@@ -48,6 +52,14 @@ public class OpportunitiesPage extends BasePage {
 		pressEnterKey();
 		waitForAjaxRequestsToComplete();
 	}
+	
+	public String getOpportunityName()
+	{
+		_waitForJStoLoad();
+		String name = opportunityName.getText();
+		return name;
+		
+	}
 
 	public void verifyDataInOpportunityTable() {
 		int count = table.size();
@@ -68,7 +80,8 @@ public class OpportunitiesPage extends BasePage {
 	}
 
 	public void addNewQuoteFromOpportunity() {
-		sleepExecution(3);
+		sleepExecution(5);
+		_waitForJStoLoad();
 		waitAndClick(quotesTab);
 		// reportLog("Click on Quote tab");
 		_waitForJStoLoad();
